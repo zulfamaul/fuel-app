@@ -11,31 +11,48 @@
     <!-- Browser Image Compression -->
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
     <style>
-        :root { --navy: #0F172A; --red: #DC2626; }
         body { background-color: #F1F5F9; font-family: sans-serif; }
+        .toast-show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
+    <!-- Toast Notification (Popup Interaktif Modern) -->
+    <div id="toast" class="fixed top-5 right-5 transform -translate-y-10 opacity-0 transition-all duration-300 z-50 max-w-sm w-full bg-slate-900 text-white p-4 rounded-lg shadow-xl border-l-4 border-emerald-500 hidden">
+        <div class="flex items-center justify-between">
+            <span id="toastMsg" class="text-xs font-semibold"></span>
+            <button onclick="hideToast()" class="text-slate-400 hover:text-white font-bold ml-2">×</button>
+        </div>
+    </div>
+
     <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-slate-200">
-        <!-- Header -->
+        
+        <!-- Header Interaktif dengan Logo & Jam Real-time -->
         <div class="bg-slate-900 text-white p-6 border-b-4 border-red-600">
             <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-xl font-bold tracking-wide">INPUT FUEL LOG</h1>
-                    <p class="text-xs text-slate-400">PT BIMA NUSA INTERNASIONAL</p>
+                <div class="flex items-center space-x-3">
+                    <!-- Logo Perusahaan -->
+                    <img src="logo.png" alt="Logo BNI" class="h-10 w-auto object-contain bg-white/10 p-1 rounded" onerror="this.style.display='none'">
+                    <div>
+                        <h1 class="text-xl font-bold tracking-wide">INPUT FUEL LOG</h1>
+                        <p class="text-xs text-slate-400">PT BIMA NUSA INTERNASIONAL</p>
+                    </div>
                 </div>
-                <div class="bg-red-600 text-white font-black px-3 py-1 rounded text-sm tracking-wider">BNI</div>
+                <!-- Live Clock Interaktif -->
+                <div class="text-right">
+                    <div id="liveClock" class="text-xs font-mono bg-slate-800 px-2.5 py-1 rounded border border-slate-700 text-emerald-400">00:00:00</div>
+                    <div id="liveDate" class="text-[10px] text-slate-400 mt-1"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Form -->
+        <!-- Form Input -->
         <form id="fuelForm" class="p-6 space-y-4">
             
             <!-- Site / Lokasi -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Site / Lokasi *</label>
-                <select id="site_name" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                <select id="site_name" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
                     <option value="">-- Pilih Site --</option>
                     <option value="SSB">SSB</option>
                     <option value="KBB">KBB</option>
@@ -47,7 +64,7 @@
             <!-- Fuel Storage -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Fuel Storage *</label>
-                <select id="fuel_storage" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                <select id="fuel_storage" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
                     <option value="">-- Pilih Storage --</option>
                     <option value="FT-010">FT-010</option>
                     <option value="FT-011">FT-011</option>
@@ -58,14 +75,14 @@
             <!-- Pelaksana (PIC) -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pelaksana (PIC) *</label>
-                <input type="text" id="pic_name" placeholder="Nama PIC" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                <input type="text" id="pic_name" placeholder="Nama PIC" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
             </div>
 
             <!-- Transaksi & No Voucher -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Transaksi *</label>
-                    <select id="receipt_issued" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                    <select id="receipt_issued" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
                         <option value="RECEIPT">RECEIPT</option>
                         <option value="ISSUED">ISSUED</option>
                         <option value="TRANSFER">TRANSFER</option>
@@ -73,7 +90,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">No Voucher</label>
-                    <input type="text" id="no_voucher" placeholder="Contoh: 12345" class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                    <input type="text" id="no_voucher" placeholder="Contoh: 12345" class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
                 </div>
             </div>
 
@@ -81,12 +98,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">No Unit *</label>
-                    <input type="text" id="no_unit" placeholder="Contoh: DT-133" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                    <input type="text" id="no_unit" placeholder="Contoh: DT-133" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
                 </div>
                 <div>
-                    <!-- Jenis Material (UPDATED: OB, COAL, TOP SOIL, MUD, GENERAL) -->
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jenis Material *</label>
-                    <select id="material_type" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                    <select id="material_type" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
                         <option value="OB">OB</option>
                         <option value="COAL">COAL</option>
                         <option value="TOP SOIL">TOP SOIL</option>
@@ -100,29 +116,31 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">HM Fuel Truck *</label>
-                    <input type="text" id="hm_fuel_truck" placeholder="Contoh: 20000" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                    <input type="text" id="hm_fuel_truck" placeholder="Contoh: 20000" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jumlah Liter *</label>
-                    <input type="number" step="any" id="fuel_amount" placeholder="Contoh: 123.5" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                    <input type="number" step="any" id="fuel_amount" placeholder="Contoh: 123.5" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
                 </div>
             </div>
 
-            <!-- Evidence Foto 1 -->
+            <!-- Evidence Foto 1 + Interactive Preview -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Evidence HM Unit (Foto) *</label>
-                <input type="file" id="evidence_hm" accept="image/*" required class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+                <input type="file" id="evidence_hm" accept="image/*" required class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
+                <img id="preview_hm" class="mt-2 h-28 w-auto rounded border border-slate-200 hidden object-cover shadow-sm" alt="Preview HM">
             </div>
 
-            <!-- Evidence Foto 2 -->
+            <!-- Evidence Foto 2 + Interactive Preview -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Evidence Jumlah Liter (Foto) *</label>
-                <input type="file" id="evidence_liter" accept="image/*" required class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+                <input type="file" id="evidence_liter" accept="image/*" required class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
+                <img id="preview_liter" class="mt-2 h-28 w-auto rounded border border-slate-200 hidden object-cover shadow-sm" alt="Preview Liter">
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" id="submitBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded transition duration-200 text-sm tracking-wider uppercase mt-4">
-                KIRIM DATA FUEL
+            <button type="submit" id="submitBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded transition duration-200 text-sm tracking-wider uppercase mt-4 shadow-lg flex items-center justify-center space-x-2">
+                <span>KIRIM DATA FUEL</span>
             </button>
 
         </form>
@@ -134,6 +152,50 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Jam & Tanggal Real-time Interaktif
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('liveClock').innerText = now.toLocaleTimeString('id-ID');
+            document.getElementById('liveDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Preview Foto Interaktif
+        function setupPreview(inputId, previewId) {
+            document.getElementById(inputId).addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                const preview = document.getElementById(previewId);
+                if (file) {
+                    preview.src = URL.createObjectURL(file);
+                    preview.classList.remove('hidden');
+                } else {
+                    preview.classList.add('hidden');
+                }
+            });
+        }
+        setupPreview('evidence_hm', 'preview_hm');
+        setupPreview('evidence_liter', 'preview_liter');
+
+        // Toast Notification Interaktif
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = msg;
+            
+            toast.className = `fixed top-5 right-5 transform transition-all duration-300 z-50 max-w-sm w-full text-white p-4 rounded-lg shadow-xl border-l-4 ${isError ? 'bg-red-900 border-red-500' : 'bg-slate-900 border-emerald-500'}`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('toast-show'), 10);
+
+            setTimeout(hideToast, 5000);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('toast-show');
+            setTimeout(() => toast.classList.add('hidden'), 300);
+        }
 
         // Kompresi Foto
         async function compressImage(file) {
@@ -165,7 +227,7 @@
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerText = "MENGOMPRES & MENGIRIM DATA...";
+            btn.innerHTML = `<span class="animate-pulse">MENGOMPRES & MENGIRIM DATA...</span>`;
 
             try {
                 const fileHM = document.getElementById('evidence_hm').files[0];
@@ -191,11 +253,13 @@
                 const { error } = await supabaseClient.from('fuel_logs').insert([payload]);
                 if (error) throw error;
 
-                alert("SUKSES: Data Fuel berhasil disimpan ke Supabase!");
+                showToast("SUKSES: Data Fuel berhasil disimpan!");
                 document.getElementById('fuelForm').reset();
+                document.getElementById('preview_hm').classList.add('hidden');
+                document.getElementById('preview_liter').classList.add('hidden');
 
             } catch (err) {
-                alert("GAGAL: " + (err.message || err));
+                showToast("GAGAL: " + (err.message || err), true);
             } finally {
                 btn.disabled = false;
                 btn.innerText = "KIRIM DATA FUEL";
