@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Input Fuel - PT Bima Nusa Internasional</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Browser Image Compression -->
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
+    <style>
+        :root { --navy: #0F172A; --red: #DC2626; }
+        body { background-color: #F1F5F9; font-family: sans-serif; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-slate-200">
+        <!-- Header -->
+        <div class="bg-slate-900 text-white p-6 border-b-4 border-red-600">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">INPUT FUEL LOG</h1>
+                    <p class="text-xs text-slate-400">PT BIMA NUSA INTERNASIONAL</p>
+                </div>
+                <div class="bg-red-600 text-white font-black px-3 py-1 rounded text-sm tracking-wider">BNI</div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form id="fuelForm" class="p-6 space-y-4">
+            
+            <!-- Site / Lokasi -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Site / Lokasi *</label>
+                <select id="site_name" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                    <option value="">-- Pilih Site --</option>
+                    <option value="SSB">SSB</option>
+                    <option value="AGM">AGM</option>
+                    <option value="BIB">BIB</option>
+                </select>
+            </div>
+
+            <!-- Fuel Storage -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Fuel Storage *</label>
+                <select id="fuel_storage" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                    <option value="">-- Pilih Storage --</option>
+                    <option value="FT-010">FT-010</option>
+                    <option value="FT-011">FT-011</option>
+                    <option value="WORKSHOP">WORKSHOP</option>
+                </select>
+            </div>
+
+            <!-- Pelaksana (PIC) -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pelaksana (PIC) *</label>
+                <input type="text" id="pic_name" placeholder="Nama PIC" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+            </div>
+
+            <!-- Transaksi & No Voucher -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Transaksi *</label>
+                    <select id="receipt_issued" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                        <option value="RECEIPT">RECEIPT</option>
+                        <option value="ISSUED">ISSUED</option>
+                        <option value="TRANSFER">TRANSFER</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">No Voucher</label>
+                    <input type="text" id="no_voucher" placeholder="Contoh: 12345" class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                </div>
+            </div>
+
+            <!-- No Unit & Jenis Material -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">No Unit *</label>
+                    <input type="text" id="no_unit" placeholder="Contoh: DT-133" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jenis Material *</label>
+                    <select id="material_type" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                        <option value="OB">OB</option>
+                        <option value="COAL">COAL</option>
+                        <option value="GENERAL">GENERAL</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- HM & Jumlah Liter -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">HM Fuel Truck *</label>
+                    <input type="text" id="hm_fuel_truck" placeholder="Contoh: 20000" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jumlah Liter *</label>
+                    <input type="number" step="any" id="fuel_amount" placeholder="Contoh: 123.5" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
+                </div>
+            </div>
+
+            <!-- Evidence Foto 1 -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Evidence HM Unit (Foto) *</label>
+                <input type="file" id="evidence_hm" accept="image/*" required class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+            </div>
+
+            <!-- Evidence Foto 2 -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Evidence Jumlah Liter (Foto) *</label>
+                <input type="file" id="evidence_liter" accept="image/*" required class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submitBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded transition duration-200 text-sm tracking-wider uppercase mt-4">
+                KIRIM DATA FUEL
+            </button>
+
+        </form>
+    </div>
+
+    <script>
+        // KOORDINAT SUPABASE KAMU (Sesuai Konfigurasi Terakhir)
+        const SUPABASE_URL = "https://srygivwnsjyjmacwokix.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Kompresi Foto
+        async function compressImage(file) {
+            const options = { maxSizeMB: 0.2, maxWidthOrHeight: 1024, useWebWorker: true };
+            try { return await imageCompression(file, options); } 
+            catch (e) { return file; }
+        }
+
+        // Upload ke Supabase Storage
+        async function uploadPhoto(file) {
+            const compressed = await compressImage(file);
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
+            
+            const { data, error } = await supabaseClient.storage
+                .from('fuel-photos')
+                .upload(fileName, compressed, { contentType: 'image/jpeg' });
+
+            if (error) throw error;
+
+            const { data: publicUrlData } = supabaseClient.storage
+                .from('fuel-photos')
+                .getPublicUrl(fileName);
+
+            return publicUrlData.publicUrl;
+        }
+
+        // Form Submit
+        document.getElementById('fuelForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "MENGOMPRES & MENGIRIM DATA...";
+
+            try {
+                const fileHM = document.getElementById('evidence_hm').files[0];
+                const fileLiter = document.getElementById('evidence_liter').files[0];
+
+                const urlHM = await uploadPhoto(fileHM);
+                const urlLiter = await uploadPhoto(fileLiter);
+
+                // Insert ke tabel fuel_logs (Format Kolom 100% Persis Dataset Supabase Kamu)
+                const payload = {
+                    site_name: document.getElementById('site_name').value,
+                    fuel_storage: document.getElementById('fuel_storage').value,
+                    pic_name: document.getElementById('pic_name').value,
+                    receipt_issued: document.getElementById('receipt_issued').value,
+                    no_voucher: document.getElementById('no_voucher').value || null,
+                    no_unit: document.getElementById('no_unit').value,
+                    material_type: document.getElementById('material_type').value,
+                    hm_fuel_truck: document.getElementById('hm_fuel_truck').value,
+                    fuel_amount: parseFloat(document.getElementById('fuel_amount').value),
+                    evidence_hm_url: urlHM,
+                    evidence_liter_url: urlLiter
+                };
+
+                const { error } = await supabaseClient.from('fuel_logs').insert([payload]);
+                if (error) throw error;
+
+                alert("SUKSES: Data Fuel berhasil disimpan ke Supabase!");
+                document.getElementById('fuelForm').reset();
+
+            } catch (err) {
+                alert("GAGAL: " + (err.message || err));
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "KIRIM DATA FUEL";
+            }
+        });
+    </script>
+</body>
+</html>
