@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Input Fuel - PT Bima Nusa Internasional</title>
-    <!-- Tailwind CSS CDN --> 
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -32,14 +32,15 @@
         <!-- Form -->
         <form id="fuelForm" class="p-6 space-y-4">
             
-            <!-- Site / Lokasi -->
+            <!-- Site / Lokasi (REVISI) -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Site / Lokasi *</label>
                 <select id="site_name" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
                     <option value="">-- Pilih Site --</option>
                     <option value="SSB">SSB</option>
-                    <option value="AGM">AGM</option>
-                    <option value="BIB">BIB</option>
+                    <option value="KBB">KBB</option>
+                    <option value="IWACO">IWACO</option>
+                    <option value="KDC">KDC</option>
                 </select>
             </div>
 
@@ -83,11 +84,13 @@
                     <input type="text" id="no_unit" placeholder="Contoh: DT-133" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
                 </div>
                 <div>
+                    <!-- Jenis Material (REVISI) -->
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jenis Material *</label>
                     <select id="material_type" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none">
                         <option value="OB">OB</option>
                         <option value="COAL">COAL</option>
-                        <option value="GENERAL">GENERAL</option>
+                        <option value="TOP SOIL">TOP SOIL</option>
+                        <option value="MUD">MUD</option>
                     </select>
                 </div>
             </div>
@@ -125,7 +128,7 @@
     </div>
 
     <script>
-        // KOORDINAT SUPABASE KAMU (Sesuai Konfigurasi Terakhir)
+        // KOORDINAT SUPABASE
         const SUPABASE_URL = "https://srygivwnsjyjmacwokix.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
         
@@ -170,7 +173,6 @@
                 const urlHM = await uploadPhoto(fileHM);
                 const urlLiter = await uploadPhoto(fileLiter);
 
-                // Insert ke tabel fuel_logs (Format Kolom 100% Persis Dataset Supabase Kamu)
                 const payload = {
                     site_name: document.getElementById('site_name').value,
                     fuel_storage: document.getElementById('fuel_storage').value,
