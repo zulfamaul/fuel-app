@@ -52,12 +52,12 @@
             <!-- Site / Lokasi -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Site / Lokasi *</label>
-                <select id="site_name" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
+                <select id="site_name" onchange="onSiteChange()" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
                     <option value="">-- Pilih Site --</option>
                     <option value="SSB">SSB</option>
                     <option value="KBB">KBB</option>
-                    <option value="IWACO">IWACO</option>
                     <option value="KDC">KDC</option>
+                    <option value="IWACO">IWACO</option>
                 </select>
             </div>
 
@@ -65,17 +65,16 @@
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Fuel Storage *</label>
                 <select id="fuel_storage" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                    <option value="">-- Pilih Storage --</option>
-                    <option value="FT-010">FT-010</option>
-                    <option value="FT-011">FT-011</option>
-                    <option value="WORKSHOP">WORKSHOP</option>
+                    <option value="">-- Pilih Site Terlebih Dahulu --</option>
                 </select>
             </div>
 
             <!-- Pelaksana (PIC) -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pelaksana (PIC) *</label>
-                <input type="text" id="pic_name" placeholder="Nama PIC" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
+                <select id="pic_name" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
+                    <option value="">-- Pilih Site Terlebih Dahulu --</option>
+                </select>
             </div>
 
             <!-- Transaksi & No Voucher -->
@@ -98,7 +97,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">No Unit *</label>
-                    <input type="text" id="no_unit" placeholder="Contoh: DT-133" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
+                    <input type="text" id="no_unit" list="unitOptions" placeholder="Ketik No Unit..." required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition" autocomplete="off">
+                    <datalist id="unitOptions"></datalist>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jenis Material *</label>
@@ -146,12 +146,62 @@
         </form>
     </div>
 
+    <!-- Menghubungkan File Master Data External -->
+    <script src="./masterData.js"></script>
+
     <script>
         // KOORDINAT SUPABASE
         const SUPABASE_URL = "https://srygivwnsjyjmacwokix.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Load Initial Master Data (Auto-Complete No Unit)
+        document.addEventListener("DOMContentLoaded", function() {
+            initUnitDatalist();
+        });
+
+        function initUnitDatalist() {
+            const datalist = document.getElementById("unitOptions");
+            if (!datalist || typeof MASTER_DATA === 'undefined') return;
+            
+            datalist.innerHTML = "";
+            MASTER_DATA.masterUnitGlobal.forEach(unit => {
+                const option = document.createElement("option");
+                option.value = unit;
+                datalist.appendChild(option);
+            });
+        }
+
+        // Trigger Saat Site Dipilih
+        function onSiteChange() {
+            const site = document.getElementById("site_name").value;
+            const storageSelect = document.getElementById("fuel_storage");
+            const picSelect = document.getElementById("pic_name");
+
+            storageSelect.innerHTML = '<option value="">-- Pilih Storage --</option>';
+            picSelect.innerHTML = '<option value="">-- Pilih PIC --</option>';
+
+            if (site && typeof MASTER_DATA !== 'undefined') {
+                if (MASTER_DATA.storagePerSite[site]) {
+                    MASTER_DATA.storagePerSite[site].forEach(storage => {
+                        const opt = document.createElement("option");
+                        opt.value = storage;
+                        opt.textContent = storage;
+                        storageSelect.appendChild(opt);
+                    });
+                }
+
+                if (MASTER_DATA.picPerSite[site]) {
+                    MASTER_DATA.picPerSite[site].forEach(pic => {
+                        const opt = document.createElement("option");
+                        opt.value = pic;
+                        opt.textContent = pic;
+                        picSelect.appendChild(opt);
+                    });
+                }
+            }
+        }
 
         // Jam & Tanggal Real-time Interaktif
         function updateClock() {
