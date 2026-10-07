@@ -3,341 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fuel Logging System - PT Bima Nusa Internasional</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Enterprise Fuel Monitoring - PT Bima Nusa Internasional</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client -->
+    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Browser Image Compression -->
-    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
-    <style>
-        body { background-color: #F1F5F9; font-family: sans-serif; }
-        .toast-show { transform: translateY(0); opacity: 1; }
-    </style>
+    <!-- SheetJS untuk Export Excel (.xlsx) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
-<body class="p-4 md:p-8">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6">
 
-    <!-- Toast Notification (Popup Interaktif Modern) -->
-    <div id="toast" class="fixed top-5 right-5 transform -translate-y-10 opacity-0 transition-all duration-300 z-50 max-w-sm w-full bg-slate-900 text-white p-4 rounded-lg shadow-xl border-l-4 border-emerald-500 hidden">
-        <div class="flex items-center justify-between">
-            <span id="toastMsg" class="text-xs font-semibold"></span>
-            <button onclick="hideToast()" class="text-slate-400 hover:text-white font-bold ml-2">×</button>
-        </div>
-    </div>
-
-    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-slate-200">
-        
-        <!-- Header Interaktif dengan Logo & Jam Real-time -->
-        <div class="bg-slate-900 text-white p-6 border-b-4 border-red-600">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <!-- Logo Perusahaan -->
-                    <img src="logo.png" alt="Logo BNI" class="h-10 w-auto object-contain bg-white/10 p-1 rounded" onerror="this.style.display='none'">
-                    <div>
-                        <h1 class="text-xl font-bold tracking-wide">ENTERPRISE FUEL TRACKER</h1>
-                        <p class="text-xs text-slate-400">PT. Bima Nusa Internasional</p>
-                    </div>
-                </div>
-                <!-- Live Clock Interaktif -->
-                <div class="text-right">
-                    <div id="liveClock" class="text-xs font-mono bg-slate-800 px-2.5 py-1 rounded border border-slate-700 text-emerald-400">00:00:00</div>
-                    <div id="liveDate" class="text-[10px] text-slate-400 mt-1"></div>
+    <!-- Header & Panel Filter -->
+    <div class="max-w-7xl mx-auto bg-slate-900 text-white rounded-xl shadow-lg p-5 mb-6 border-b-4 border-red-600">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <img src="./logo.png" alt="BNI Logo" class="h-10 w-auto object-contain bg-white/10 p-1 rounded" onerror="this.onerror=null; this.src='logo.PNG';">
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide flex items-center gap-2">
+                        ENTERPRISE FUEL MONITORING 
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-500 text-white animate-pulse">LIVE</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">PT BIMA NUSA INTERNASIONAL</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Form Input -->
-        <form id="fuelForm" class="p-6 space-y-4">
-            
-            <!-- Site / Lokasi & Shift (Disandingkan 2 Kolom) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Site / Lokasi *</label>
-                    <select id="site_name" onchange="onSiteChange()" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                        <option value="">Pilih Site</option>
+            <!-- Kelompok Filter Sesuai Gambar + Tanggal & Download -->
+            <div class="flex flex-wrap items-center gap-2 bg-slate-800/80 p-2 rounded-lg border border-slate-700/80 shadow-inner">
+                
+                <!-- Filter Tanggal -->
+                <div class="flex items-center space-x-1 bg-slate-900/90 px-2.5 py-1.5 rounded border border-slate-700">
+                    <label class="text-[11px] font-semibold text-slate-300 uppercase">TGL:</label>
+                    <input type="date" id="startDate" class="bg-slate-800 text-white text-xs font-semibold rounded p-1 outline-none border border-slate-600 focus:ring-1 focus:ring-red-500">
+                    <span class="text-slate-400 text-xs">s/d</span>
+                    <input type="date" id="endDate" class="bg-slate-800 text-white text-xs font-semibold rounded p-1 outline-none border border-slate-600 focus:ring-1 focus:ring-red-500">
+                    <button onclick="resetDateFilter()" title="Reset Tanggal" class="text-xs text-slate-400 hover:text-red-400 font-bold px-1">✕</button>
+                </div>
+
+                <!-- Filter Site -->
+                <div class="flex items-center space-x-1.5 px-1">
+                    <label for="filterSite" class="text-xs font-semibold text-slate-300 uppercase">SITE:</label>
+                    <select id="filterSite" class="bg-slate-900 text-white text-xs font-bold rounded p-2 outline-none border border-slate-700 focus:ring-2 focus:ring-red-500">
+                        <option value="ALL">SEMUA</option>
                         <option value="SSB">SSB</option>
                         <option value="KBB">KBB</option>
-                        <option value="KDC">KDC</option>
                         <option value="IWACO">IWACO</option>
+                        <option value="KDC">KDC</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Shift *</label>
-                    <select id="shift" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                        <option value="Day">Day</option>
-                        <option value="Night">Night</option>
+
+                <!-- Filter Shift -->
+                <div class="flex items-center space-x-1.5 px-1">
+                    <label for="filterShift" class="text-xs font-semibold text-slate-300 uppercase">SHIFT:</label>
+                    <select id="filterShift" class="bg-slate-900 text-white text-xs font-bold rounded p-2 outline-none border border-slate-700 focus:ring-2 focus:ring-red-500">
+                        <option value="ALL">SEMUA</option>
+                        <option value="Day">DAY SHIFT</option>
+                        <option value="Night">NIGHT SHIFT</option>
                     </select>
                 </div>
-            </div>
 
-            <!-- Fuel Storage -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Fuel Storage *</label>
-                <select id="fuel_storage" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                    <option value="">Pilih Site Terlebih Dahulu</option>
-                </select>
-            </div>
-
-            <!-- Pelaksana (PIC) -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pelaksana (PIC) *</label>
-                <select id="pic_name" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                    <option value="">Pilih Site Terlebih Dahulu</option>
-                </select>
-            </div>
-
-            <!-- Transaksi & No Voucher -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Transaksi *</label>
-                    <select id="receipt_issued" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                        <option value="RECEIPT">RECEIPT</option>
+                <!-- Filter Transaksi -->
+                <div class="flex items-center space-x-1.5 px-1">
+                    <label for="filterTx" class="text-xs font-semibold text-slate-300 uppercase">TX:</label>
+                    <select id="filterTx" class="bg-slate-900 text-white text-xs font-bold rounded p-2 outline-none border border-slate-700 focus:ring-2 focus:ring-red-500">
+                        <option value="ALL">SEMUA</option>
                         <option value="ISSUED">ISSUED</option>
+                        <option value="RECEIPT">RECEIPT</option>
                         <option value="TRANSFER">TRANSFER</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">No Voucher</label>
-                    <input type="text" id="no_voucher" placeholder="Contoh: 12345" class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                </div>
+
+                <!-- Tombol Download Excel -->
+                <button onclick="exportToExcel()" class="ml-auto flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-2 rounded shadow transition border border-emerald-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span>Excel</span>
+                </button>
+
             </div>
-
-            <!-- No Unit & Jenis Material -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">No Unit *</label>
-                    <input type="text" id="no_unit" list="unitOptions" placeholder="Ketik No Unit..." required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition" autocomplete="off">
-                    <datalist id="unitOptions"></datalist>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jenis Material *</label>
-                    <select id="material_type" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                        <option value="OB">OB</option>
-                        <option value="COAL">COAL</option>
-                        <option value="TOP SOIL">TOP SOIL</option>
-                        <option value="MUD">MUD</option>
-                        <option value="GENERAL">GENERAL</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- HM & Jumlah Liter -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">HM Fuel Truck *</label>
-                    <input type="text" id="hm_fuel_truck" placeholder="Contoh: 20000" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jumlah Liter *</label>
-                    <input type="number" step="any" id="fuel_amount" placeholder="Contoh: 123.5" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                </div>
-            </div>
-
-            <!-- Evidence Foto 1 + Interactive Preview -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Evidence HM Unit (Foto) *</label>
-                <input type="file" id="evidence_hm" accept="image/*" required class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
-                <img id="preview_hm" class="mt-2 h-28 w-auto rounded border border-slate-200 hidden object-cover shadow-sm" alt="Preview HM">
-            </div>
-
-            <!-- Evidence Foto 2 + Interactive Preview -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Evidence Jumlah Liter (Foto) *</label>
-                <input type="file" id="evidence_liter" accept="image/*" required class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
-                <img id="preview_liter" class="mt-2 h-28 w-auto rounded border border-slate-200 hidden object-cover shadow-sm" alt="Preview Liter">
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" id="submitBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded transition duration-200 text-sm tracking-wider uppercase mt-4 shadow-lg flex items-center justify-center space-x-2">
-                <span>KIRIM DATA FUEL</span>
-            </button>
-
-        </form>
+        </div>
     </div>
 
-    <!-- Menghubungkan File Master Data External -->
-    <script src="./masterData.js"></script>
+    <!-- Summary Cards (KPI) -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
+            <p class="text-xs font-bold text-slate-500 uppercase">Total Transaksi Sesuai Filter</p>
+            <p id="statCount" class="text-2xl font-black text-slate-900 mt-1">0</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
+            <p class="text-xs font-bold text-slate-500 uppercase">Total Solar Issued (Liter)</p>
+            <p id="statTotalIssued" class="text-2xl font-black text-emerald-600 mt-1">0 L</p>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
+            <p class="text-xs font-bold text-slate-500 uppercase">Site Aktif Dipilih</p>
+            <p id="statActiveSite" class="text-2xl font-black text-slate-900 mt-1">SEMUA SITE</p>
+        </div>
+    </div>
+
+    <!-- Realtime Table -->
+    <div class="max-w-7xl mx-auto bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+        <div class="p-4 bg-slate-50 border-b border-slate-200 font-bold text-xs text-slate-700 uppercase tracking-wider flex justify-between items-center">
+            <span>Riwayat Transaksi Realtime</span>
+            <span class="text-[10px] text-slate-400 font-normal">HO Monitoring Control</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-900 text-white uppercase font-semibold text-[11px]">
+                    <tr>
+                        <th class="p-3">Waktu Input</th>
+                        <th class="p-3">Site</th>
+                        <th class="p-3">Shift</th>
+                        <th class="p-3">Storage</th>
+                        <th class="p-3">Transaksi</th>
+                        <th class="p-3">No Unit</th>
+                        <th class="p-3">Material</th>
+                        <th class="p-3">Liter</th>
+                        <th class="p-3">HM Truck</th>
+                        <th class="p-3">Voucher</th>
+                        <th class="p-3">PIC</th>
+                        <th class="p-3 text-center">Foto Bukti</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTableBody" class="divide-y divide-slate-200">
+                    <tr>
+                        <td colspan="12" class="p-8 text-center text-slate-400">Memuat data transaksi...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Pop-up untuk Evidence Foto -->
+    <div id="imageModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl max-w-2xl w-full p-4 relative shadow-2xl">
+            <button onclick="closeModal()" class="absolute top-2 right-2 text-slate-500 hover:text-red-600 font-bold text-xl px-2">✕</button>
+            <h3 class="text-sm font-bold text-slate-800 uppercase mb-3 border-b pb-2">Evidence Foto Transaksi</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-xs font-semibold text-slate-500 mb-1">Evidence HM Unit</p>
+                    <img id="modalImgHM" src="" class="w-full h-56 object-cover rounded border border-slate-200 bg-slate-100" alt="Foto HM">
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-slate-500 mb-1">Evidence Liter</p>
+                    <img id="modalImgLiter" src="" class="w-full h-56 object-cover rounded border border-slate-200 bg-slate-100" alt="Foto Liter">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // KOORDINAT SUPABASE
         const SUPABASE_URL = "https://srygivwnsjyjmacwokix.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
-        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Load Initial Master Data (Auto-Complete No Unit)
-        document.addEventListener("DOMContentLoaded", function() {
-            initUnitDatalist();
-            autoSelectShift();
-        });
+        let allLogs = [];
+        let currentlyFilteredLogs = [];
 
-        // (Bonus) Otomatis memilih Day/Night berdasarkan jam komputer lokal saat ini
-        function autoSelectShift() {
-            const currentHour = new Date().getHours();
-            const shiftSelect = document.getElementById("shift");
-            if (currentHour >= 7 && currentHour < 19) {
-                shiftSelect.value = "Day";
-            } else {
-                shiftSelect.value = "Night";
+        async function fetchLogs() {
+            const { data, error } = await supabaseClient
+                .from('fuel_logs')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(500);
+
+            if (error) {
+                console.error("Error fetching logs:", error);
+                return;
             }
+
+            allLogs = data;
+            renderTable();
         }
 
-        function initUnitDatalist() {
-            const datalist = document.getElementById("unitOptions");
-            if (!datalist || typeof MASTER_DATA === 'undefined') return;
+        function resetDateFilter() {
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            renderTable();
+        }
+
+        function renderTable() {
+            const filterSiteVal = document.getElementById('filterSite').value;
+            const filterShiftVal = document.getElementById('filterShift').value;
+            const filterTxVal = document.getElementById('filterTx').value;
+            const startDateVal = document.getElementById('startDate').value;
+            const endDateVal = document.getElementById('endDate').value;
+
+            const tbody = document.getElementById('logsTableBody');
             
-            datalist.innerHTML = "";
-            MASTER_DATA.masterUnitGlobal.forEach(unit => {
-                const option = document.createElement("option");
-                option.value = unit;
-                datalist.appendChild(option);
+            document.getElementById('statActiveSite').innerText = filterSiteVal === 'ALL' ? 'SEMUA SITE' : filterSiteVal;
+
+            currentlyFilteredLogs = allLogs.filter(item => {
+                const matchSite = (filterSiteVal === 'ALL') || (item.site_name === filterSiteVal);
+                
+                const itemShift = item.shift ? item.shift.toString().trim() : '';
+                const matchShift = (filterShiftVal === 'ALL') || (itemShift.toLowerCase() === filterShiftVal.toLowerCase());
+
+                const txType = item.receipt_issued ? item.receipt_issued.toString().trim().toUpperCase() : '';
+                const matchTx = (filterTxVal === 'ALL') || (txType === filterTxVal);
+
+                let matchDate = true;
+                if (item.created_at) {
+                    const itemDate = new Date(item.created_at);
+                    if (startDateVal) {
+                        const start = new Date(startDateVal);
+                        start.setHours(0, 0, 0, 0);
+                        if (itemDate < start) matchDate = false;
+                    }
+                    if (endDateVal) {
+                        const end = new Date(endDateVal);
+                        end.setHours(23, 59, 59, 999);
+                        if (itemDate > end) matchDate = false;
+                    }
+                }
+
+                return matchSite && matchShift && matchTx && matchDate;
             });
-        }
 
-        // Trigger Saat Site Dipilih
-        function onSiteChange() {
-            const site = document.getElementById("site_name").value;
-            const storageSelect = document.getElementById("fuel_storage");
-            const picSelect = document.getElementById("pic_name");
+            document.getElementById('statCount').innerText = currentlyFilteredLogs.length;
 
-            storageSelect.innerHTML = '<option value="">-- Pilih Storage --</option>';
-            picSelect.innerHTML = '<option value="">-- Pilih PIC --</option>';
+            const totalIssued = currentlyFilteredLogs
+                .filter(i => i.receipt_issued && i.receipt_issued.toString().trim().toUpperCase() === 'ISSUED')
+                .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
 
-            if (site && typeof MASTER_DATA !== 'undefined') {
-                if (MASTER_DATA.storagePerSite[site]) {
-                    MASTER_DATA.storagePerSite[site].forEach(storage => {
-                        const opt = document.createElement("option");
-                        opt.value = storage;
-                        opt.textContent = storage;
-                        storageSelect.appendChild(opt);
-                    });
-                }
+            document.getElementById('statTotalIssued').innerText = `${totalIssued.toLocaleString('id-ID')} L`;
 
-                if (MASTER_DATA.picPerSite[site]) {
-                    MASTER_DATA.picPerSite[site].forEach(pic => {
-                        const opt = document.createElement("option");
-                        opt.value = pic;
-                        opt.textContent = pic;
-                        picSelect.appendChild(opt);
-                    });
-                }
+            if (currentlyFilteredLogs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-slate-400">Tidak ada data transaksi yang sesuai filter.</td></tr>`;
+                return;
             }
+
+            tbody.innerHTML = currentlyFilteredLogs.map((log, index) => {
+                const dateObj = new Date(log.created_at);
+                const timeStr = dateObj.toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                
+                const tx = log.receipt_issued ? log.receipt_issued.toString().trim().toUpperCase() : '';
+                let badgeStyle = "bg-slate-100 text-slate-700";
+                if (tx === 'ISSUED') badgeStyle = "bg-red-100 text-red-700";
+                if (tx === 'RECEIPT') badgeStyle = "bg-emerald-100 text-emerald-700";
+                if (tx === 'TRANSFER') badgeStyle = "bg-blue-100 text-blue-700";
+
+                const shiftVal = log.shift || '-';
+                let shiftStyle = "bg-slate-100 text-slate-600";
+                if (shiftVal.toLowerCase() === 'day') shiftStyle = "bg-amber-100 text-amber-800 border border-amber-300";
+                if (shiftVal.toLowerCase() === 'night') shiftStyle = "bg-indigo-100 text-indigo-800 border border-indigo-300";
+
+                return `
+                    <tr class="${index === 0 ? 'bg-amber-50/60' : 'hover:bg-slate-50'} transition">
+                        <td class="p-3 font-mono text-slate-500 whitespace-nowrap">${timeStr}</td>
+                        <td class="p-3 font-bold text-slate-900">${log.site_name || '-'}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${shiftStyle}">
+                                ${shiftVal}
+                            </span>
+                        </td>
+                        <td class="p-3">${log.fuel_storage || '-'}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeStyle}">
+                                ${tx || '-'}
+                            </span>
+                        </td>
+                        <td class="p-3 font-bold text-slate-800">${log.no_unit || '-'}</td>
+                        <td class="p-3">${log.material_type || '-'}</td>
+                        <td class="p-3 font-black text-slate-900">${log.fuel_amount || 0} L</td>
+                        <td class="p-3 font-mono">${log.hm_fuel_truck || '-'}</td>
+                        <td class="p-3 text-slate-500">${log.no_voucher || '-'}</td>
+                        <td class="p-3 font-medium">${log.pic_name || '-'}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="openModal('${log.evidence_hm_url}', '${log.evidence_liter_url}')" class="bg-slate-800 hover:bg-slate-900 text-white text-[10px] px-2.5 py-1 rounded shadow transition">
+                                Lihat Foto
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        // Jam & Tanggal Real-time Interaktif
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('liveClock').innerText = now.toLocaleTimeString('id-ID');
-            document.getElementById('liveDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // Preview Foto Interaktif
-        function setupPreview(inputId, previewId) {
-            document.getElementById(inputId).addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                const preview = document.getElementById(previewId);
-                if (file) {
-                    preview.src = URL.createObjectURL(file);
-                    preview.classList.remove('hidden');
-                } else {
-                    preview.classList.add('hidden');
-                }
-            });
-        }
-        setupPreview('evidence_hm', 'preview_hm');
-        setupPreview('evidence_liter', 'preview_liter');
-
-        // Toast Notification Interaktif
-        function showToast(msg, isError = false) {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
-            toastMsg.innerText = msg;
-            
-            toast.className = `fixed top-5 right-5 transform transition-all duration-300 z-50 max-w-sm w-full text-white p-4 rounded-lg shadow-xl border-l-4 ${isError ? 'bg-red-900 border-red-500' : 'bg-slate-900 border-emerald-500'}`;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('toast-show'), 10);
-
-            setTimeout(hideToast, 5000);
-        }
-
-        function hideToast() {
-            const toast = document.getElementById('toast');
-            toast.classList.remove('toast-show');
-            setTimeout(() => toast.classList.add('hidden'), 300);
-        }
-
-        // Kompresi Foto
-        async function compressImage(file) {
-            const options = { maxSizeMB: 0.2, maxWidthOrHeight: 1024, useWebWorker: true };
-            try { return await imageCompression(file, options); } 
-            catch (e) { return file; }
-        }
-
-        // Upload ke Supabase Storage
-        async function uploadPhoto(file) {
-            const compressed = await compressImage(file);
-            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
-            
-            const { data, error } = await supabaseClient.storage
-                .from('fuel-photos')
-                .upload(fileName, compressed, { contentType: 'image/jpeg' });
-
-            if (error) throw error;
-
-            const { data: publicUrlData } = supabaseClient.storage
-                .from('fuel-photos')
-                .getPublicUrl(fileName);
-
-            return publicUrlData.publicUrl;
-        }
-
-        // Form Submit
-        document.getElementById('fuelForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerHTML = `<span class="animate-pulse">MENGOMPRES & MENGIRIM DATA...</span>`;
-
-            try {
-                const fileHM = document.getElementById('evidence_hm').files[0];
-                const fileLiter = document.getElementById('evidence_liter').files[0];
-
-                const urlHM = await uploadPhoto(fileHM);
-                const urlLiter = await uploadPhoto(fileLiter);
-
-                const payload = {
-                    site_name: document.getElementById('site_name').value,
-                    shift: document.getElementById('shift').value,
-                    fuel_storage: document.getElementById('fuel_storage').value,
-                    pic_name: document.getElementById('pic_name').value,
-                    receipt_issued: document.getElementById('receipt_issued').value,
-                    no_voucher: document.getElementById('no_voucher').value || null,
-                    no_unit: document.getElementById('no_unit').value,
-                    material_type: document.getElementById('material_type').value,
-                    hm_fuel_truck: document.getElementById('hm_fuel_truck').value,
-                    fuel_amount: parseFloat(document.getElementById('fuel_amount').value),
-                    evidence_hm_url: urlHM,
-                    evidence_liter_url: urlLiter
-                };
-
-                const { error } = await supabaseClient.from('fuel_logs').insert([payload]);
-                if (error) throw error;
-
-                showToast("SUKSES: Data Fuel berhasil disimpan!");
-                document.getElementById('fuelForm').reset();
-                autoSelectShift(); // Reset shift otomatis sesuai jam saat ini
-                document.getElementById('preview_hm').classList.add('hidden');
-                document.getElementById('preview_liter').classList.add('hidden');
-
-            } catch (err) {
-                showToast("GAGAL: " + (err.message || err), true);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "KIRIM DATA FUEL";
+        // Fungsi Export ke Excel (.xlsx)
+        function exportToExcel() {
+            if (currentlyFilteredLogs.length === 0) {
+                alert("Tidak ada data yang dapat diunduh!");
+                return;
             }
-        });
+
+            const excelData = currentlyFilteredLogs.map((log, index) => ({
+                "No": index + 1,
+                "Waktu Input": log.created_at ? new Date(log.created_at).toLocaleString('id-ID') : '-',
+                "Site": log.site_name || '-',
+                "Shift": log.shift || '-',
+                "Storage": log.fuel_storage || '-',
+                "Transaksi": log.receipt_issued || '-',
+                "No Unit": log.no_unit || '-',
+                "Material": log.material_type || '-',
+                "Jumlah (Liter)": parseFloat(log.fuel_amount) || 0,
+                "HM Truck": log.hm_fuel_truck || '-',
+                "No Voucher": log.no_voucher || '-',
+                "PIC": log.pic_name || '-',
+                "Link Foto HM": log.evidence_hm_url || '-',
+                "Link Foto Liter": log.evidence_liter_url || '-'
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Fuel");
+
+            const todayStr = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(workbook, `Rekap_Fuel_BNI_${todayStr}.xlsx`);
+        }
+
+        // Listeners
+        document.getElementById('filterSite').addEventListener('change', renderTable);
+        document.getElementById('filterShift').addEventListener('change', renderTable);
+        document.getElementById('filterTx').addEventListener('change', renderTable);
+        document.getElementById('startDate').addEventListener('change', renderTable);
+        document.getElementById('endDate').addEventListener('change', renderTable);
+
+        function subscribeRealtime() {
+            supabaseClient
+                .channel('realtime_fuel_logs')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'fuel_logs' }, (payload) => {
+                    allLogs.unshift(payload.new);
+                    renderTable();
+                })
+                .subscribe();
+        }
+
+        function openModal(hmUrl, literUrl) {
+            document.getElementById('modalImgHM').src = hmUrl || '';
+            document.getElementById('modalImgLiter').src = literUrl || '';
+            document.getElementById('imageModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+
+        fetchLogs();
+        subscribeRealtime();
     </script>
 </body>
 </html>
