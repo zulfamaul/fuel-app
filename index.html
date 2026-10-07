@@ -49,23 +49,32 @@
         <!-- Form Input -->
         <form id="fuelForm" class="p-6 space-y-4">
             
-            <!-- Site / Lokasi -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Site / Lokasi *</label>
-                <select id="site_name" onchange="onSiteChange()" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                    <option value="">-- Pilih Site --</option>
-                    <option value="SSB">SSB</option>
-                    <option value="KBB">KBB</option>
-                    <option value="KDC">KDC</option>
-                    <option value="IWACO">IWACO</option>
-                </select>
+            <!-- Site / Lokasi & Shift (Disandingkan 2 Kolom) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Site / Lokasi *</label>
+                    <select id="site_name" onchange="onSiteChange()" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
+                        <option value="">Pilih Site</option>
+                        <option value="SSB">SSB</option>
+                        <option value="KBB">KBB</option>
+                        <option value="KDC">KDC</option>
+                        <option value="IWACO">IWACO</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Shift *</label>
+                    <select id="shift" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
+                        <option value="Day">Day</option>
+                        <option value="Night">Night</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Fuel Storage -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Fuel Storage *</label>
                 <select id="fuel_storage" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                    <option value="">-- Pilih Site Terlebih Dahulu --</option>
+                    <option value="">Pilih Site Terlebih Dahulu</option>
                 </select>
             </div>
 
@@ -73,7 +82,7 @@
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pelaksana (PIC) *</label>
                 <select id="pic_name" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                    <option value="">-- Pilih Site Terlebih Dahulu --</option>
+                    <option value="">Pilih Site Terlebih Dahulu</option>
                 </select>
             </div>
 
@@ -159,7 +168,19 @@
         // Load Initial Master Data (Auto-Complete No Unit)
         document.addEventListener("DOMContentLoaded", function() {
             initUnitDatalist();
+            autoSelectShift();
         });
+
+        // (Bonus) Otomatis memilih Day/Night berdasarkan jam komputer lokal saat ini
+        function autoSelectShift() {
+            const currentHour = new Date().getHours();
+            const shiftSelect = document.getElementById("shift");
+            if (currentHour >= 7 && currentHour < 19) {
+                shiftSelect.value = "Day";
+            } else {
+                shiftSelect.value = "Night";
+            }
+        }
 
         function initUnitDatalist() {
             const datalist = document.getElementById("unitOptions");
@@ -288,6 +309,7 @@
 
                 const payload = {
                     site_name: document.getElementById('site_name').value,
+                    shift: document.getElementById('shift').value,
                     fuel_storage: document.getElementById('fuel_storage').value,
                     pic_name: document.getElementById('pic_name').value,
                     receipt_issued: document.getElementById('receipt_issued').value,
@@ -305,6 +327,7 @@
 
                 showToast("SUKSES: Data Fuel berhasil disimpan!");
                 document.getElementById('fuelForm').reset();
+                autoSelectShift(); // Reset shift otomatis sesuai jam saat ini
                 document.getElementById('preview_hm').classList.add('hidden');
                 document.getElementById('preview_liter').classList.add('hidden');
 
