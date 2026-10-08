@@ -22,7 +22,7 @@
             100% { transform: translateX(-50%) translateZ(0) scaleY(1); }
         }
         .wave-animation {
-            animation: wave 4s linear infinite;
+            animation: wave 3s linear infinite;
         }
     </style>
 </head>
@@ -56,15 +56,14 @@
     <!-- Main Content Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- KPI Metrics Grid ( include Fuel Tank Animation ) -->
+        <!-- KPI Metrics Grid -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             <!-- Card 1: Total Transaksi -->
             <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-between">
-                <p class="text-xs font-medium text-slate-500">Total Transaksi Sesuai Filter</p>
+                <p class="text-xs font-medium text-slate-500">Total Transaksi</p>
                 <div class="mt-2 flex items-baseline justify-between">
                     <p id="statCount" class="text-2xl font-semibold text-slate-900">0</p>
-                    <span class="text-xs text-slate-400">Record</span>
                 </div>
             </div>
 
@@ -73,32 +72,30 @@
                 <p id="statTxLabel" class="text-xs font-medium text-slate-500">Total Volume Solar</p>
                 <div class="mt-2 flex items-baseline justify-between">
                     <p id="statTxAmount" class="text-2xl font-semibold text-emerald-600">0 L</p>
-                    <span id="statTxSublabel" class="text-xs text-emerald-600/80 font-medium">Liter</span>
                 </div>
             </div>
 
             <!-- Card 3: Site Aktif -->
             <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-between">
-                <p class="text-xs font-medium text-slate-500">Site Aktif Dipilih</p>
+                <p class="text-xs font-medium text-slate-500">Site Aktif</p>
                 <div class="mt-2 flex items-baseline justify-between">
                     <p id="statActiveSite" class="text-2xl font-semibold text-slate-900 truncate">SEMUA SITE</p>
-                    <span class="text-xs text-slate-400">Status Filter</span>
                 </div>
             </div>
 
             <!-- Card 4: Animated Fuel Tank Widget -->
-            <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex items-center space-x-3">
+            <div class="bg-white p-3.5 rounded-lg border border-slate-200 shadow-sm flex items-center space-x-3.5">
                 <!-- Visual Tangki -->
-                <div class="relative w-12 h-16 bg-slate-100 border-2 border-slate-300 rounded-md overflow-hidden flex-shrink-0 flex flex-col justify-end">
+                <div class="relative w-12 h-16 bg-slate-900 border-2 border-slate-700 rounded-md overflow-hidden flex-shrink-0 flex flex-col justify-end shadow-inner">
                     <!-- Penanda Garis Level Tangki -->
                     <div class="absolute inset-0 flex flex-col justify-between p-1 z-10 opacity-30 pointer-events-none">
-                        <div class="w-full h-px bg-slate-600"></div>
-                        <div class="w-full h-px bg-slate-600"></div>
-                        <div class="w-full h-px bg-slate-600"></div>
+                        <div class="w-full h-px bg-white"></div>
+                        <div class="w-full h-px bg-white"></div>
+                        <div class="w-full h-px bg-white"></div>
                     </div>
-                    <!-- Cairan Fuel & Animasi Wave -->
-                    <div id="tankFluid" class="w-[200%] bg-amber-500/80 wave-animation transition-all duration-700 ease-out relative" style="height: 0%;">
-                        <div class="absolute top-0 left-0 w-full h-1 bg-amber-400"></div>
+                    <!-- Cairan Air Cyan/Biru dengan Animasi Wave -->
+                    <div id="tankFluid" class="w-[200%] bg-gradient-to-t from-cyan-600 to-blue-500 wave-animation transition-all duration-700 ease-out relative opacity-90" style="height: 0%;">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-cyan-300 shadow-sm"></div>
                     </div>
                 </div>
 
@@ -106,7 +103,7 @@
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between">
                         <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-tight">Sisa Stok Solar</p>
-                        <span id="tankPercentage" class="text-xs font-bold text-amber-600">0%</span>
+                        <span id="tankPercentage" class="text-xs font-bold text-cyan-600">0%</span>
                     </div>
                     <p id="tankVolume" class="text-lg font-bold text-slate-900 truncate mt-0.5">0 L</p>
                     <p class="text-[10px] text-slate-400 truncate">(Receipt - Issued)</p>
@@ -230,8 +227,8 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Kapasitas Acuan Maksimum Tangki (Liter)
-        const MAX_TANK_CAPACITY = 50000; 
+        // Kapasitas Acuan Maksimum Tangki (Liter) - Silakan sesuaikan jika perlu
+        const MAX_TANK_CAPACITY = 1000; 
 
         let allLogs = [];
         let currentlyFilteredLogs = [];
@@ -331,17 +328,22 @@
             }
             txAmount.innerText = `${totalVolume.toLocaleString('id-ID')} L`;
 
-            // Perhitungan Sisa Stok Solar (RECEIPT - ISSUED)
-            const totalReceiptAll = currentlyFilteredLogs
+            // Perhitungan Sisa Stok Solar Global (RECEIPT - ISSUED) dari Seluruh Data
+            const totalReceiptGlobal = allLogs
                 .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'RECEIPT')
                 .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
 
-            const totalIssuedAll = currentlyFilteredLogs
+            const totalIssuedGlobal = allLogs
                 .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'ISSUED')
                 .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
 
-            const remainingFuel = Math.max(0, totalReceiptAll - totalIssuedAll);
-            const percentage = Math.min(100, Math.round((remainingFuel / MAX_TANK_CAPACITY) * 100));
+            const remainingFuel = Math.max(0, totalReceiptGlobal - totalIssuedGlobal);
+            
+            // Hitung Persentase & pastikan batas minimum 1% jika ada stok agar gelombang tetap terlihat
+            let percentage = 0;
+            if (remainingFuel > 0) {
+                percentage = Math.min(100, Math.max(1, Math.round((remainingFuel / MAX_TANK_CAPACITY) * 100)));
+            }
 
             // Update Widget Animasi Fuel Tank
             document.getElementById('tankVolume').innerText = `${remainingFuel.toLocaleString('id-ID')} L`;
