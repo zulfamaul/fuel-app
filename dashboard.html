@@ -14,6 +14,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
+        
+        /* Animasi Gelombang Tangki Fuel */
+        @keyframes wave {
+            0% { transform: translateX(0) translateZ(0) scaleY(1); }
+            50% { transform: translateX(-25%) translateZ(0) scaleY(0.85); }
+            100% { transform: translateX(-50%) translateZ(0) scaleY(1); }
+        }
+        .wave-animation {
+            animation: wave 4s linear infinite;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
@@ -46,9 +56,11 @@
     <!-- Main Content Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- KPI Metrics Grid -->
-        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+        <!-- KPI Metrics Grid ( include Fuel Tank Animation ) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Card 1: Total Transaksi -->
+            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-between">
                 <p class="text-xs font-medium text-slate-500">Total Transaksi Sesuai Filter</p>
                 <div class="mt-2 flex items-baseline justify-between">
                     <p id="statCount" class="text-2xl font-semibold text-slate-900">0</p>
@@ -56,21 +68,51 @@
                 </div>
             </div>
 
-            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                <p class="text-xs font-medium text-slate-500">Total Solar Issued</p>
+            <!-- Card 2: Dinamis Sesuai Jenis Filter TX -->
+            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-between">
+                <p id="statTxLabel" class="text-xs font-medium text-slate-500">Total Volume Solar</p>
                 <div class="mt-2 flex items-baseline justify-between">
-                    <p id="statTotalIssued" class="text-2xl font-semibold text-emerald-600">0 L</p>
-                    <span class="text-xs text-emerald-600/80 font-medium">Liter</span>
+                    <p id="statTxAmount" class="text-2xl font-semibold text-emerald-600">0 L</p>
+                    <span id="statTxSublabel" class="text-xs text-emerald-600/80 font-medium">Liter</span>
                 </div>
             </div>
 
-            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+            <!-- Card 3: Site Aktif -->
+            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-between">
                 <p class="text-xs font-medium text-slate-500">Site Aktif Dipilih</p>
                 <div class="mt-2 flex items-baseline justify-between">
-                    <p id="statActiveSite" class="text-2xl font-semibold text-slate-900">SEMUA SITE</p>
-                    <span class="text-xs text-slate-400">Filter Status</span>
+                    <p id="statActiveSite" class="text-2xl font-semibold text-slate-900 truncate">SEMUA SITE</p>
+                    <span class="text-xs text-slate-400">Status Filter</span>
                 </div>
             </div>
+
+            <!-- Card 4: Animated Fuel Tank Widget -->
+            <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex items-center space-x-3">
+                <!-- Visual Tangki -->
+                <div class="relative w-12 h-16 bg-slate-100 border-2 border-slate-300 rounded-md overflow-hidden flex-shrink-0 flex flex-col justify-end">
+                    <!-- Penanda Garis Level Tangki -->
+                    <div class="absolute inset-0 flex flex-col justify-between p-1 z-10 opacity-30 pointer-events-none">
+                        <div class="w-full h-px bg-slate-600"></div>
+                        <div class="w-full h-px bg-slate-600"></div>
+                        <div class="w-full h-px bg-slate-600"></div>
+                    </div>
+                    <!-- Cairan Fuel & Animasi Wave -->
+                    <div id="tankFluid" class="w-[200%] bg-amber-500/80 wave-animation transition-all duration-700 ease-out relative" style="height: 0%;">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-amber-400"></div>
+                    </div>
+                </div>
+
+                <!-- Informasi Sisa Stok -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-tight">Sisa Stok Solar</p>
+                        <span id="tankPercentage" class="text-xs font-bold text-amber-600">0%</span>
+                    </div>
+                    <p id="tankVolume" class="text-lg font-bold text-slate-900 truncate mt-0.5">0 L</p>
+                    <p class="text-[10px] text-slate-400 truncate">(Receipt - Issued)</p>
+                </div>
+            </div>
+
         </section>
 
         <!-- Filter Bar & Actions -->
@@ -182,11 +224,14 @@
         </div>
     </div>
 
-    <!-- JavaScript logic -->
+    <!-- JavaScript Logic -->
     <script>
         const SUPABASE_URL = "https://srygivwnsjyjmacwokix.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Kapasitas Acuan Maksimum Tangki (Liter)
+        const MAX_TANK_CAPACITY = 50000; 
 
         let allLogs = [];
         let currentlyFilteredLogs = [];
@@ -224,6 +269,7 @@
             
             document.getElementById('statActiveSite').innerText = filterSiteVal === 'ALL' ? 'SEMUA SITE' : filterSiteVal;
 
+            // Filter Data Sesuai Pilihan Dropdown
             currentlyFilteredLogs = allLogs.filter(item => {
                 const matchSite = (filterSiteVal === 'ALL') || (item.site_name === filterSiteVal);
                 
@@ -251,14 +297,58 @@
                 return matchSite && matchShift && matchTx && matchDate;
             });
 
+            // Update Jumlah Transaksi
             document.getElementById('statCount').innerText = currentlyFilteredLogs.length;
 
-            const totalIssued = currentlyFilteredLogs
-                .filter(i => i.receipt_issued && i.receipt_issued.toString().trim().toUpperCase() === 'ISSUED')
+            // Update Kartu Statistik Jenis Transaksi Dinamis
+            const txLabel = document.getElementById('statTxLabel');
+            const txAmount = document.getElementById('statTxAmount');
+            
+            let totalVolume = 0;
+            if (filterTxVal === 'ISSUED') {
+                txLabel.innerText = "Total Solar Issued";
+                totalVolume = currentlyFilteredLogs
+                    .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'ISSUED')
+                    .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
+                txAmount.className = "text-2xl font-semibold text-rose-600";
+            } else if (filterTxVal === 'RECEIPT') {
+                txLabel.innerText = "Total Solar Receipt";
+                totalVolume = currentlyFilteredLogs
+                    .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'RECEIPT')
+                    .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
+                txAmount.className = "text-2xl font-semibold text-emerald-600";
+            } else if (filterTxVal === 'TRANSFER') {
+                txLabel.innerText = "Total Solar Transfer";
+                totalVolume = currentlyFilteredLogs
+                    .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'TRANSFER')
+                    .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
+                txAmount.className = "text-2xl font-semibold text-sky-600";
+            } else {
+                txLabel.innerText = "Total Volume Solar (Semua TX)";
+                totalVolume = currentlyFilteredLogs
+                    .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
+                txAmount.className = "text-2xl font-semibold text-slate-900";
+            }
+            txAmount.innerText = `${totalVolume.toLocaleString('id-ID')} L`;
+
+            // Perhitungan Sisa Stok Solar (RECEIPT - ISSUED)
+            const totalReceiptAll = currentlyFilteredLogs
+                .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'RECEIPT')
                 .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
 
-            document.getElementById('statTotalIssued').innerText = `${totalIssued.toLocaleString('id-ID')} L`;
+            const totalIssuedAll = currentlyFilteredLogs
+                .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'ISSUED')
+                .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
 
+            const remainingFuel = Math.max(0, totalReceiptAll - totalIssuedAll);
+            const percentage = Math.min(100, Math.round((remainingFuel / MAX_TANK_CAPACITY) * 100));
+
+            // Update Widget Animasi Fuel Tank
+            document.getElementById('tankVolume').innerText = `${remainingFuel.toLocaleString('id-ID')} L`;
+            document.getElementById('tankPercentage').innerText = `${percentage}%`;
+            document.getElementById('tankFluid').style.height = `${percentage}%`;
+
+            // Render Baris Tabel
             if (currentlyFilteredLogs.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-slate-400">Tidak ada data transaksi yang sesuai filter.</td></tr>`;
                 return;
