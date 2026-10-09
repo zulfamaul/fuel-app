@@ -46,7 +46,7 @@
                 <div class="flex items-center space-x-2">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
                         <span class="w-1.5 h-1.5 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                        Live Realtime
+                        Realtime Moni
                     </span>
                 </div>
             </div>
@@ -77,13 +77,13 @@
 
             <!-- Card 3: Site Aktif -->
             <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-between">
-                <p class="text-xs font-medium text-slate-500">Site Aktif</p>
+                <p class="text-xs font-medium text-slate-500">Site</p>
                 <div class="mt-2 flex items-baseline justify-between">
-                    <p id="statActiveSite" class="text-2xl font-semibold text-slate-900 truncate">SEMUA SITE</p>
+                    <p id="statActiveSite" class="text-2xl font-semibold text-slate-900 truncate">ALL SITE</p>
                 </div>
             </div>
 
-            <!-- Card 4: Animated Fuel Tank Widget -->
+            <!-- Card 4: Animated Fuel Tank Widget (Tanpa Persentase) -->
             <div class="bg-white p-3.5 rounded-lg border border-slate-200 shadow-sm flex items-center space-x-3.5">
                 <!-- Visual Tangki -->
                 <div class="relative w-12 h-16 bg-slate-900 border-2 border-slate-700 rounded-md overflow-hidden flex-shrink-0 flex flex-col justify-end shadow-inner">
@@ -101,12 +101,9 @@
 
                 <!-- Informasi Sisa Stok -->
                 <div class="flex-1 min-w-0">
-                    <div class="flex items-center justify-between">
-                        <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-tight">Sisa Stok Solar</p>
-                        <span id="tankPercentage" class="text-xs font-bold text-cyan-600">0%</span>
-                    </div>
-                    <p id="tankVolume" class="text-lg font-bold text-slate-900 truncate mt-0.5">0 L</p>
-                    <p class="text-[10px] text-slate-400 truncate">(Receipt - Issued)</p>
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-tight">Sisa Stok fuel</p>
+                    <p id="tankVolume" class="text-xl font-bold text-slate-900 truncate mt-1">0 L</p>
+                    <p class="text-[10px] text-slate-400 truncate mt-0.5">-------------------------</p>
                 </div>
             </div>
 
@@ -119,7 +116,7 @@
             <div class="flex flex-wrap items-center gap-3">
                 <!-- Date Filter -->
                 <div class="flex items-center space-x-1.5 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-200">
-                    <span class="text-xs font-medium text-slate-500">TGL:</span>
+                    <span class="text-xs font-medium text-slate-500">Tanggal:</span>
                     <input type="date" id="startDate" class="bg-transparent text-xs font-medium text-slate-700 outline-none">
                     <span class="text-xs text-slate-400">s/d</span>
                     <input type="date" id="endDate" class="bg-transparent text-xs font-medium text-slate-700 outline-none">
@@ -128,9 +125,9 @@
 
                 <!-- Site Filter -->
                 <div class="flex items-center space-x-1.5">
-                    <label for="filterSite" class="text-xs font-medium text-slate-500">SITE:</label>
+                    <label for="filterSite" class="text-xs font-medium text-slate-500">Site:</label>
                     <select id="filterSite" class="bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 rounded px-2.5 py-1.5 outline-none focus:border-slate-400">
-                        <option value="ALL">Semua Site</option>
+                        <option value="ALL">All Site</option>
                         <option value="SSB">SSB</option>
                         <option value="KBB">KBB</option>
                         <option value="IWACO">IWACO</option>
@@ -140,22 +137,22 @@
 
                 <!-- Shift Filter -->
                 <div class="flex items-center space-x-1.5">
-                    <label for="filterShift" class="text-xs font-medium text-slate-500">SHIFT:</label>
+                    <label for="filterShift" class="text-xs font-medium text-slate-500">Shift:</label>
                     <select id="filterShift" class="bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 rounded px-2.5 py-1.5 outline-none focus:border-slate-400">
-                        <option value="ALL">Semua Shift</option>
-                        <option value="Day">Day Shift</option>
-                        <option value="Night">Night Shift</option>
+                        <option value="ALL">All Shift</option>
+                        <option value="Day">Day</option>
+                        <option value="Night">Night</option>
                     </select>
                 </div>
 
                 <!-- TX Filter -->
                 <div class="flex items-center space-x-1.5">
-                    <label for="filterTx" class="text-xs font-medium text-slate-500">TX:</label>
+                    <label for="filterTx" class="text-xs font-medium text-slate-500">Transaction:</label>
                     <select id="filterTx" class="bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 rounded px-2.5 py-1.5 outline-none focus:border-slate-400">
-                        <option value="ALL">Semua TX</option>
-                        <option value="ISSUED">ISSUED</option>
-                        <option value="RECEIPT">RECEIPT</option>
-                        <option value="TRANSFER">TRANSFER</option>
+                        <option value="ALL">All Trx</option>
+                        <option value="ISSUED">Issued</option>
+                        <option value="RECEIPT">Receipt</option>
+                        <option value="TRANSFER">Transfer</option>
                     </select>
                 </div>
             </div>
@@ -171,8 +168,8 @@
         <!-- Table Data Section -->
         <section class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
             <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-                <h2 class="text-xs font-semibold text-slate-700 uppercase tracking-wider">Riwayat Transaksi Realtime</h2>
-                <span class="text-[11px] text-slate-400">HO Control Panel</span>
+                <h2 class="text-xs font-semibold text-slate-700 uppercase tracking-wider">Riwayat Transaksi</h2>
+                <span class="text-[11px] text-slate-400">Monitoring Control HO</span>
             </div>
             
             <div class="overflow-x-auto">
@@ -190,7 +187,7 @@
                             <th class="p-3">HM Truck</th>
                             <th class="p-3">Voucher</th>
                             <th class="p-3">PIC</th>
-                            <th class="p-3 text-center">Foto Bukti</th>
+                            <th class="p-3 text-center">Evidence Unit</th>
                         </tr>
                     </thead>
                     <tbody id="logsTableBody" class="divide-y divide-slate-100 text-slate-700">
@@ -207,7 +204,7 @@
     <div id="imageModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-xl max-w-2xl w-full p-5 relative shadow-xl border border-slate-200">
             <button onclick="closeModal()" class="absolute top-3 right-3 text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
-            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">Evidence Foto Transaksi</h3>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">Evidence Transaksi</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <p class="text-xs font-medium text-slate-500 mb-2">Evidence HM Unit</p>
@@ -226,9 +223,6 @@
         const SUPABASE_URL = "https://srygivwnsjyjmacwokix.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        // Kapasitas Acuan Maksimum Tangki (Liter) - Silakan sesuaikan jika perlu
-        const MAX_TANK_CAPACITY = 1000; 
 
         let allLogs = [];
         let currentlyFilteredLogs = [];
@@ -328,7 +322,7 @@
             }
             txAmount.innerText = `${totalVolume.toLocaleString('id-ID')} L`;
 
-            // Perhitungan Sisa Stok Solar Global (RECEIPT - ISSUED) dari Seluruh Data
+            // Hitung Sisa Stok Realtime (RECEIPT - ISSUED) Seluruh Data
             const totalReceiptGlobal = allLogs
                 .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'RECEIPT')
                 .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
@@ -338,17 +332,18 @@
                 .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
 
             const remainingFuel = Math.max(0, totalReceiptGlobal - totalIssuedGlobal);
-            
-            // Hitung Persentase & pastikan batas minimum 1% jika ada stok agar gelombang tetap terlihat
-            let percentage = 0;
-            if (remainingFuel > 0) {
-                percentage = Math.min(100, Math.max(1, Math.round((remainingFuel / MAX_TANK_CAPACITY) * 100)));
-            }
 
-            // Update Widget Animasi Fuel Tank
+            // Update Tampilan Volume Tangki & Visual Ketinggian Cairan
             document.getElementById('tankVolume').innerText = `${remainingFuel.toLocaleString('id-ID')} L`;
-            document.getElementById('tankPercentage').innerText = `${percentage}%`;
-            document.getElementById('tankFluid').style.height = `${percentage}%`;
+
+            // Visual Ketinggian Air Tangki (Berbanding terhadap Total Penerimaan RECEIPT)
+            let visualHeight = 0;
+            if (totalReceiptGlobal > 0) {
+                visualHeight = Math.min(100, Math.max(10, Math.round((remainingFuel / totalReceiptGlobal) * 100)));
+            } else if (remainingFuel > 0) {
+                visualHeight = 50; // Visual default jika baru ada data awal
+            }
+            document.getElementById('tankFluid').style.height = `${visualHeight}%`;
 
             // Render Baris Tabel
             if (currentlyFilteredLogs.length === 0) {
