@@ -315,7 +315,7 @@
                     .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
                 txAmount.className = "text-2xl font-semibold text-sky-600";
             } else {
-                txLabel.innerText = "Total Volume Solar (Semua TX)";
+                txLabel.innerText = "Total Volume Solar";
                 totalVolume = currentlyFilteredLogs
                     .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
                 txAmount.className = "text-2xl font-semibold text-slate-900";
