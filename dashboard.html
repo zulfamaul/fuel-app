@@ -287,7 +287,7 @@
 
             const tbody = document.getElementById('logsTableBody');
             
-            document.getElementById('statActiveSite').innerText = filterSiteVal === 'ALL' ? 'SEMUA SITE' : filterSiteVal;
+            document.getElementById('statActiveSite').innerText = filterSiteVal === 'ALL' ? 'ALL SITE' : filterSiteVal;
 
             // Filter Data Sesuai Pilihan Dropdown
             currentlyFilteredLogs = allLogs.filter(item => {
@@ -351,26 +351,31 @@
             }
             txAmount.innerText = `${totalVolume.toLocaleString('id-ID')} L`;
 
-            // Hitung Sisa Stok Realtime (RECEIPT - ISSUED) Seluruh Data
-            const totalReceiptGlobal = allLogs
+            // ---------------------------------------------------------------------------
+            // HITUNG SISA STOK REALTIME KHUSUS DARI SITE YANG SEDANG DIPILIH
+            // ---------------------------------------------------------------------------
+            const siteLogsForStock = allLogs.filter(item => {
+                return (filterSiteVal === 'ALL') || (item.site_name === filterSiteVal);
+            });
+
+            const totalReceiptSite = siteLogsForStock
                 .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'RECEIPT')
                 .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
 
-            const totalIssuedGlobal = allLogs
+            const totalIssuedSite = siteLogsForStock
                 .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'ISSUED')
                 .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
 
-            const remainingFuel = Math.max(0, totalReceiptGlobal - totalIssuedGlobal);
+            const remainingFuel = Math.max(0, totalReceiptSite - totalIssuedSite);
 
             // Update Tampilan Volume Tangki & Visual Ketinggian Cairan
             document.getElementById('tankVolume').innerText = `${remainingFuel.toLocaleString('id-ID')} L`;
 
-            // Visual Ketinggian Air Tangki (Berbanding terhadap Total Penerimaan RECEIPT)
             let visualHeight = 0;
-            if (totalReceiptGlobal > 0) {
-                visualHeight = Math.min(100, Math.max(10, Math.round((remainingFuel / totalReceiptGlobal) * 100)));
+            if (totalReceiptSite > 0) {
+                visualHeight = Math.min(100, Math.max(10, Math.round((remainingFuel / totalReceiptSite) * 100)));
             } else if (remainingFuel > 0) {
-                visualHeight = 50; // Visual default jika baru ada data awal
+                visualHeight = 50;
             }
             document.getElementById('tankFluid').style.height = `${visualHeight}%`;
 
