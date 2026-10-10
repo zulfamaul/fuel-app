@@ -335,9 +335,6 @@
     <!-- JavaScript Logic -->
     <script>
         const SUPABASE_URL = "https://srygivwnsjyjmacwokix.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyTSIsInVzZXJfaWQiOiJmYWtlIn0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
-        
-        // Gunakan key yang valid dari script kamu sebelumnya
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -347,6 +344,13 @@
         // State Pagination
         let currentPage = 1;
         let rowsPerPage = 30;
+
+        // Set Default Tanggal Filter ke Hari Ini Secara Realtime saat Halaman Dimuat
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('endDate').value = today;
+        }
 
         async function fetchLogs() {
             const { data, error } = await supabaseClient
@@ -382,7 +386,7 @@
             
             document.getElementById('statActiveSite').innerText = filterSiteVal === 'ALL' ? 'ALL SITE' : filterSiteVal;
 
-            // Filter Data Sesuai Pilihan Dropdown
+            // Filter Data Sesuai Pilihan Dropdown & Tanggal
             currentlyFilteredLogs = allLogs.filter(item => {
                 const matchSite = (filterSiteVal === 'ALL') || (item.site_name === filterSiteVal);
                 
@@ -600,7 +604,7 @@
             }
 
             closeEditModal();
-            fetchLogs(); // Refresh data tabel
+            fetchLogs();
         }
 
         // FUNGSI CRUD: DELETE DATA
@@ -617,7 +621,7 @@
                 return;
             }
 
-            fetchLogs(); // Refresh data tabel
+            fetchLogs();
         }
 
         // Kontrol Pagination
@@ -683,7 +687,7 @@
             supabaseClient
                 .channel('realtime_fuel_logs')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'fuel_logs' }, (payload) => {
-                    fetchLogs(); // Otomatis sinkronisasi saat ada insert, update, atau delete di database
+                    fetchLogs();
                 })
                 .subscribe();
         }
@@ -698,6 +702,8 @@
             document.getElementById('imageModal').classList.add('hidden');
         }
 
+        // Inisialisasi Saat Halaman Dimuat
+        setDefaultDate();
         fetchLogs();
         subscribeRealtime();
     </script>
