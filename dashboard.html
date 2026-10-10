@@ -174,7 +174,7 @@
         <section class="bg-white border border-slate-200 border-t-2 border-t-slate-300 rounded-lg shadow-sm overflow-hidden">
             <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
                 <h2 class="text-xs font-semibold text-slate-700 uppercase tracking-wider">Riwayat Transaksi</h2>
-                <span class="text-[11px] text-slate-400">Monitoring Control HO</span>
+                <span class="text-[11px] text-slate-400">Monitoring Control HO & Panel Edit</span>
             </div>
             
             <div class="overflow-x-auto">
@@ -192,12 +192,13 @@
                             <th class="p-3">HM Truck</th>
                             <th class="p-3">Voucher</th>
                             <th class="p-3">PIC</th>
-                            <th class="p-3 text-center">Evidence Unit</th>
+                            <th class="p-3 text-center">Evidence</th>
+                            <th class="p-3 text-center">Aksi (HO)</th>
                         </tr>
                     </thead>
                     <tbody id="logsTableBody" class="divide-y divide-slate-100 text-slate-700">
                         <tr>
-                            <td colspan="12" class="p-8 text-center text-slate-400">Memuat data transaksi...</td>
+                            <td colspan="13" class="p-8 text-center text-slate-400">Memuat data transaksi...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -247,11 +248,98 @@
         </div>
     </div>
 
+    <!-- Edit Modal (CRUD Update) -->
+    <div id="editModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 relative shadow-xl border border-slate-200">
+            <button onclick="closeEditModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold">✕</button>
+            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">Edit Data Transaksi</h3>
+            
+            <form id="editForm" onsubmit="handleUpdate(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="editId">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Site</label>
+                        <select id="editSiteName" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                            <option value="SSB">SSB</option>
+                            <option value="KBB">KBB</option>
+                            <option value="IWACO">IWACO</option>
+                            <option value="KDC">KDC</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Shift</label>
+                        <select id="editShift" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                            <option value="Day">Day</option>
+                            <option value="Night">Night</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Storage</label>
+                        <input type="text" id="editFuelStorage" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Transaction</label>
+                        <select id="editReceiptIssued" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                            <option value="ISSUED">ISSUED</option>
+                            <option value="RECEIPT">RECEIPT</option>
+                            <option value="TRANSFER">TRANSFER</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">No Unit</label>
+                        <input type="text" id="editNoUnit" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Material Type</label>
+                        <input type="text" id="editMaterialType" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Jumlah (Liter)</label>
+                        <input type="number" step="any" id="editFuelAmount" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">HM Fuel Truck</label>
+                        <input type="text" id="editHmFuelTruck" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">No Voucher</label>
+                        <input type="text" id="editNoVoucher" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">PIC Name</label>
+                        <input type="text" id="editPicName" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded hover:bg-slate-200 transition">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-900 text-white font-semibold rounded hover:bg-blue-800 transition">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- JavaScript Logic -->
     <script>
         const SUPABASE_URL = "https://srygivwnsjyjmacwokix.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyTSIsInVzZXJfaWQiOiJmYWtlIn0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
+        
+        // Gunakan key yang valid dari script kamu sebelumnya
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let allLogs = [];
         let currentlyFilteredLogs = [];
@@ -356,9 +444,7 @@
             }
             txAmount.innerText = `${totalVolume.toLocaleString('id-ID')} L`;
 
-            // ---------------------------------------------------------------------------
             // HITUNG SISA STOK REALTIME KHUSUS DARI SITE YANG SEDANG DIPILIH
-            // ---------------------------------------------------------------------------
             const siteLogsForStock = allLogs.filter(item => {
                 return (filterSiteVal === 'ALL') || (item.site_name === filterSiteVal);
             });
@@ -407,7 +493,7 @@
 
             // Render Baris Tabel
             if (paginatedLogs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-slate-400">Tidak ada data transaksi yang sesuai filter.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="13" class="p-8 text-center text-slate-400">Tidak ada data transaksi yang sesuai filter.</td></tr>`;
                 return;
             }
 
@@ -452,9 +538,86 @@
                                 Foto
                             </button>
                         </td>
+                        <td class="p-3 text-center whitespace-nowrap">
+                            <button onclick="openEditModal('${log.id}')" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 text-[11px] font-medium px-2 py-1 rounded transition mr-1 border border-blue-200">Edit</button>
+                            <button onclick="handleDelete('${log.id}')" class="text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 text-[11px] font-medium px-2 py-1 rounded transition border border-rose-200">Hapus</button>
+                        </td>
                     </tr>
                 `;
             }).join('');
+        }
+
+        // FUNGSI CRUD: OPEN EDIT MODAL & ISI DATA
+        function openEditModal(id) {
+            const log = allLogs.find(i => i.id == id);
+            if (!log) return;
+
+            document.getElementById('editId').value = log.id;
+            document.getElementById('editSiteName').value = log.site_name || 'SSB';
+            document.getElementById('editShift').value = log.shift || 'Day';
+            document.getElementById('editFuelStorage').value = log.fuel_storage || '';
+            document.getElementById('editReceiptIssued').value = log.receipt_issued || 'ISSUED';
+            document.getElementById('editNoUnit').value = log.no_unit || '';
+            document.getElementById('editMaterialType').value = log.material_type || '';
+            document.getElementById('editFuelAmount').value = log.fuel_amount || '';
+            document.getElementById('editHmFuelTruck').value = log.hm_fuel_truck || '';
+            document.getElementById('editNoVoucher').value = log.no_voucher || '';
+            document.getElementById('editPicName').value = log.pic_name || '';
+
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        // FUNGSI CRUD: SUBMIT UPDATE KE SUPABASE
+        async function handleUpdate(event) {
+            event.preventDefault();
+            const id = document.getElementById('editId').value;
+
+            const updatedData = {
+                site_name: document.getElementById('editSiteName').value,
+                shift: document.getElementById('editShift').value,
+                fuel_storage: document.getElementById('editFuelStorage').value,
+                receipt_issued: document.getElementById('editReceiptIssued').value,
+                no_unit: document.getElementById('editNoUnit').value,
+                material_type: document.getElementById('editMaterialType').value,
+                fuel_amount: parseFloat(document.getElementById('editFuelAmount').value) || 0,
+                hm_fuel_truck: document.getElementById('editHmFuelTruck').value,
+                no_voucher: document.getElementById('editNoVoucher').value,
+                pic_name: document.getElementById('editPicName').value
+            };
+
+            const { error } = await supabaseClient
+                .from('fuel_logs')
+                .update(updatedData)
+                .eq('id', id);
+
+            if (error) {
+                alert("Gagal memperbarui data: " + error.message);
+                return;
+            }
+
+            closeEditModal();
+            fetchLogs(); // Refresh data tabel
+        }
+
+        // FUNGSI CRUD: DELETE DATA
+        async function handleDelete(id) {
+            if (!confirm("Apakah kamu yakin ingin menghapus data transaksi ini secara permanen?")) return;
+
+            const { error } = await supabaseClient
+                .from('fuel_logs')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                alert("Gagal menghapus data: " + error.message);
+                return;
+            }
+
+            fetchLogs(); // Refresh data tabel
         }
 
         // Kontrol Pagination
@@ -519,9 +682,8 @@
         function subscribeRealtime() {
             supabaseClient
                 .channel('realtime_fuel_logs')
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'fuel_logs' }, (payload) => {
-                    allLogs.unshift(payload.new);
-                    renderTable();
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'fuel_logs' }, (payload) => {
+                    fetchLogs(); // Otomatis sinkronisasi saat ada insert, update, atau delete di database
                 })
                 .subscribe();
         }
