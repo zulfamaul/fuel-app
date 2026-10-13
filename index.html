@@ -102,30 +102,29 @@
                 </div>
             </div>
 
-            <!-- No Unit, Keterangan Unit (Dinamis SSB), & Jenis Material -->
-            <div id="unitContainerGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300">
+            <!-- No Unit & Keterangan Unit (Opsional) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">No Unit *</label>
                     <input type="text" id="no_unit" list="unitOptions" placeholder="Ketik No Unit..." required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition" autocomplete="off">
                     <datalist id="unitOptions"></datalist>
                 </div>
-
-                <!-- Kolom Tambahan Keterangan Unit (Hanya muncul jika site SSB dipilih) -->
-                <div id="keteranganWrapper" class="hidden">
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Keterangan Unit <span class="text-slate-400 font-normal">(Ops)</span></label>
-                    <input type="text" id="keterangan_unit" placeholder="Keterangan tambahan..." class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                </div>
-
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jenis Material *</label>
-                    <select id="material_type" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
-                        <option value="OB">OB</option>
-                        <option value="COAL">COAL</option>
-                        <option value="TOP SOIL">TOP SOIL</option>
-                        <option value="MUD">MUD</option>
-                        <option value="GENERAL">GENERAL</option>
-                    </select>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Keterangan Unit <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                    <input type="text" id="unit_remark" placeholder="Contoh: Unit Kendala / Standby" class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
                 </div>
+            </div>
+
+            <!-- Jenis Material -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jenis Material *</label>
+                <select id="material_type" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
+                    <option value="OB">OB</option>
+                    <option value="COAL">COAL</option>
+                    <option value="TOP SOIL">TOP SOIL</option>
+                    <option value="MUD">MUD</option>
+                    <option value="GENERAL">GENERAL</option>
+                </select>
             </div>
 
             <!-- HM & Jumlah Liter -->
@@ -178,7 +177,6 @@
             autoSelectShift();
         });
 
-        // Otomatis memilih Day/Night berdasarkan jam komputer lokal saat ini
         function autoSelectShift() {
             const currentHour = new Date().getHours();
             const shiftSelect = document.getElementById("shift");
@@ -201,27 +199,13 @@
             });
         }
 
-        // Trigger Saat Site Dipilih (Termasuk Logika Kolom Keterangan Unit Khusus SSB)
         function onSiteChange() {
             const site = document.getElementById("site_name").value;
             const storageSelect = document.getElementById("fuel_storage");
             const picSelect = document.getElementById("pic_name");
-            const unitContainerGrid = document.getElementById("unitContainerGrid");
-            const keteranganWrapper = document.getElementById("keteranganWrapper");
-            const inputKeterangan = document.getElementById("keterangan_unit");
 
             storageSelect.innerHTML = '<option value="">-- Pilih Storage --</option>';
             picSelect.innerHTML = '<option value="">-- Pilih PIC --</option>';
-
-            // Pengaturan Grid & Kolom Keterangan Unit Khusus SSB
-            if (site === "SSB") {
-                unitContainerGrid.className = "grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-300";
-                keteranganWrapper.classList.remove("hidden");
-            } else {
-                unitContainerGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300";
-                keteranganWrapper.classList.add("hidden");
-                inputKeterangan.value = ""; // Reset nilai jika berpindah site
-            }
 
             if (site && typeof MASTER_DATA !== 'undefined') {
                 if (MASTER_DATA.storagePerSite[site]) {
@@ -244,7 +228,6 @@
             }
         }
 
-        // Jam & Tanggal Real-time Interaktif
         function updateClock() {
             const now = new Date();
             document.getElementById('liveClock').innerText = now.toLocaleTimeString('id-ID');
@@ -253,7 +236,6 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Preview Foto Interaktif
         function setupPreview(inputId, previewId) {
             document.getElementById(inputId).addEventListener('change', function(e) {
                 const file = e.target.files[0];
@@ -269,7 +251,6 @@
         setupPreview('evidence_hm', 'preview_hm');
         setupPreview('evidence_liter', 'preview_liter');
 
-        // Toast Notification Interaktif
         function showToast(msg, isError = false) {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toastMsg');
@@ -288,14 +269,12 @@
             setTimeout(() => toast.classList.add('hidden'), 300);
         }
 
-        // Kompresi Foto
         async function compressImage(file) {
             const options = { maxSizeMB: 0.2, maxWidthOrHeight: 1024, useWebWorker: true };
             try { return await imageCompression(file, options); } 
             catch (e) { return file; }
         }
 
-        // Upload ke Supabase Storage
         async function uploadPhoto(file) {
             const compressed = await compressImage(file);
             const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
@@ -313,7 +292,6 @@
             return publicUrlData.publicUrl;
         }
 
-        // Form Submit
         document.getElementById('fuelForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
@@ -335,7 +313,7 @@
                     receipt_issued: document.getElementById('receipt_issued').value,
                     no_voucher: document.getElementById('no_voucher').value || null,
                     no_unit: document.getElementById('no_unit').value,
-                    keterangan_unit: document.getElementById('keterangan_unit').value || null,
+                    unit_remark: document.getElementById('unit_remark').value || null,
                     material_type: document.getElementById('material_type').value,
                     hm_fuel_truck: document.getElementById('hm_fuel_truck').value,
                     fuel_amount: parseFloat(document.getElementById('fuel_amount').value),
@@ -348,8 +326,7 @@
 
                 showToast("SUKSES: Data Fuel berhasil disimpan!");
                 document.getElementById('fuelForm').reset();
-                autoSelectShift(); // Reset shift otomatis sesuai jam saat ini
-                onSiteChange(); // Reset tampilan grid form ke kondisi awal
+                autoSelectShift();
                 document.getElementById('preview_hm').classList.add('hidden');
                 document.getElementById('preview_liter').classList.add('hidden');
 
