@@ -187,6 +187,7 @@
                             <th class="p-3">Storage</th>
                             <th class="p-3">Transaksi</th>
                             <th class="p-3">No Unit</th>
+                            <th class="p-3">Keterangan Unit</th>
                             <th class="p-3">Material</th>
                             <th class="p-3">Liter</th>
                             <th class="p-3">HM Truck</th>
@@ -198,7 +199,7 @@
                     </thead>
                     <tbody id="logsTableBody" class="divide-y divide-slate-100 text-slate-700">
                         <tr>
-                            <td colspan="13" class="p-8 text-center text-slate-400">Memuat data transaksi...</td>
+                            <td colspan="14" class="p-8 text-center text-slate-400">Memuat data transaksi...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -297,31 +298,36 @@
                         <input type="text" id="editNoUnit" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                     </div>
                     <div>
-                        <label class="block font-medium text-slate-600 mb-1">Material Type</label>
-                        <input type="text" id="editMaterialType" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                        <label class="block font-medium text-slate-600 mb-1">Keterangan Unit</label>
+                        <input type="text" id="editKeteranganUnit" placeholder="Khusus SSB..." class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Material Type</label>
+                        <input type="text" id="editMaterialType" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                    </div>
                     <div>
                         <label class="block font-medium text-slate-600 mb-1">Jumlah (Liter)</label>
                         <input type="number" step="any" id="editFuelAmount" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                     </div>
-                    <div>
-                        <label class="block font-medium text-slate-600 mb-1">HM Fuel Truck</label>
-                        <input type="text" id="editHmFuelTruck" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
-                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
+                        <label class="block font-medium text-slate-600 mb-1">HM Fuel Truck</label>
+                        <input type="text" id="editHmFuelTruck" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                    </div>
+                    <div>
                         <label class="block font-medium text-slate-600 mb-1">No Voucher</label>
                         <input type="text" id="editNoVoucher" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                     </div>
-                    <div>
-                        <label class="block font-medium text-slate-600 mb-1">PIC Name</label>
-                        <input type="text" id="editPicName" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
-                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-slate-600 mb-1">PIC Name</label>
+                    <input type="text" id="editPicName" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                 </div>
 
                 <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
@@ -497,7 +503,7 @@
 
             // Render Baris Tabel
             if (paginatedLogs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="13" class="p-8 text-center text-slate-400">Tidak ada data transaksi yang sesuai filter.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="14" class="p-8 text-center text-slate-400">Tidak ada data transaksi yang sesuai filter.</td></tr>`;
                 return;
             }
 
@@ -516,6 +522,8 @@
                 if (shiftVal.toLowerCase() === 'day') shiftStyle = "bg-amber-50 text-amber-700 border border-amber-200";
                 if (shiftVal.toLowerCase() === 'night') shiftStyle = "bg-indigo-50 text-indigo-700 border border-indigo-200";
 
+                const keteranganVal = log.keterangan_unit ? log.keterangan_unit : '-';
+
                 return `
                     <tr class="hover:bg-slate-50/80 transition">
                         <td class="p-3 text-slate-500 whitespace-nowrap">${timeStr}</td>
@@ -532,6 +540,7 @@
                             </span>
                         </td>
                         <td class="p-3 font-medium text-slate-800">${log.no_unit || '-'}</td>
+                        <td class="p-3 text-slate-600 italic">${keteranganVal}</td>
                         <td class="p-3 text-slate-600">${log.material_type || '-'}</td>
                         <td class="p-3 font-semibold text-slate-900">${log.fuel_amount || 0} L</td>
                         <td class="p-3 text-slate-600 font-mono text-[11px]">${log.hm_fuel_truck || '-'}</td>
@@ -562,6 +571,7 @@
             document.getElementById('editFuelStorage').value = log.fuel_storage || '';
             document.getElementById('editReceiptIssued').value = log.receipt_issued || 'ISSUED';
             document.getElementById('editNoUnit').value = log.no_unit || '';
+            document.getElementById('editKeteranganUnit').value = log.keterangan_unit || '';
             document.getElementById('editMaterialType').value = log.material_type || '';
             document.getElementById('editFuelAmount').value = log.fuel_amount || '';
             document.getElementById('editHmFuelTruck').value = log.hm_fuel_truck || '';
@@ -586,6 +596,7 @@
                 fuel_storage: document.getElementById('editFuelStorage').value,
                 receipt_issued: document.getElementById('editReceiptIssued').value,
                 no_unit: document.getElementById('editNoUnit').value,
+                keterangan_unit: document.getElementById('editKeteranganUnit').value || null,
                 material_type: document.getElementById('editMaterialType').value,
                 fuel_amount: parseFloat(document.getElementById('editFuelAmount').value) || 0,
                 hm_fuel_truck: document.getElementById('editHmFuelTruck').value,
@@ -660,6 +671,7 @@
                 "Storage": log.fuel_storage || '-',
                 "Transaksi": log.receipt_issued || '-',
                 "No Unit": log.no_unit || '-',
+                "Keterangan Unit": log.keterangan_unit || '-',
                 "Material": log.material_type || '-',
                 "Jumlah (Liter)": parseFloat(log.fuel_amount) || 0,
                 "HM Truck": log.hm_fuel_truck || '-',
