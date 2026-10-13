@@ -26,7 +26,7 @@
     </div>
 
     <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-slate-200">
-        
+
         <!-- Header Interaktif dengan Logo & Jam Real-time -->
         <div class="bg-slate-900 text-white p-6 border-b-4 border-red-600">
             <div class="flex items-center justify-between">
@@ -48,7 +48,7 @@
 
         <!-- Form Input -->
         <form id="fuelForm" class="p-6 space-y-4">
-            
+
             <!-- Site / Lokasi & Shift (Disandingkan 2 Kolom) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -102,13 +102,20 @@
                 </div>
             </div>
 
-            <!-- No Unit & Jenis Material -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- No Unit, Keterangan Unit (Dinamis SSB), & Jenis Material -->
+            <div id="unitContainerGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">No Unit *</label>
                     <input type="text" id="no_unit" list="unitOptions" placeholder="Ketik No Unit..." required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition" autocomplete="off">
                     <datalist id="unitOptions"></datalist>
                 </div>
+
+                <!-- Kolom Tambahan Keterangan Unit (Hanya muncul jika site SSB dipilih) -->
+                <div id="keteranganWrapper" class="hidden">
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Keterangan Unit <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                    <input type="text" id="keterangan_unit" placeholder="Keterangan tambahan..." class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
+                </div>
+
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jenis Material *</label>
                     <select id="material_type" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
@@ -162,7 +169,7 @@
         // KOORDINAT SUPABASE
         const SUPABASE_URL = "https://srygivwnsjyjmacwokix.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
-        
+
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // Load Initial Master Data (Auto-Complete No Unit)
@@ -171,7 +178,7 @@
             autoSelectShift();
         });
 
-        // (Bonus) Otomatis memilih Day/Night berdasarkan jam komputer lokal saat ini
+        // Otomatis memilih Day/Night berdasarkan jam komputer lokal saat ini
         function autoSelectShift() {
             const currentHour = new Date().getHours();
             const shiftSelect = document.getElementById("shift");
@@ -185,7 +192,7 @@
         function initUnitDatalist() {
             const datalist = document.getElementById("unitOptions");
             if (!datalist || typeof MASTER_DATA === 'undefined') return;
-            
+
             datalist.innerHTML = "";
             MASTER_DATA.masterUnitGlobal.forEach(unit => {
                 const option = document.createElement("option");
@@ -194,14 +201,27 @@
             });
         }
 
-        // Trigger Saat Site Dipilih
+        // Trigger Saat Site Dipilih (Termasuk Logika Kolom Keterangan Unit Khusus SSB)
         function onSiteChange() {
             const site = document.getElementById("site_name").value;
             const storageSelect = document.getElementById("fuel_storage");
             const picSelect = document.getElementById("pic_name");
+            const unitContainerGrid = document.getElementById("unitContainerGrid");
+            const keteranganWrapper = document.getElementById("keteranganWrapper");
+            const inputKeterangan = document.getElementById("keterangan_unit");
 
             storageSelect.innerHTML = '<option value="">-- Pilih Storage --</option>';
             picSelect.innerHTML = '<option value="">-- Pilih PIC --</option>';
+
+            // Pengaturan Grid & Kolom Keterangan Unit Khusus SSB
+            if (site === "SSB") {
+                unitContainerGrid.className = "grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-300";
+                keteranganWrapper.classList.remove("hidden");
+            } else {
+                unitContainerGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300";
+                keteranganWrapper.classList.add("hidden");
+                inputKeterangan.value = ""; // Reset nilai jika berpindah site
+            }
 
             if (site && typeof MASTER_DATA !== 'undefined') {
                 if (MASTER_DATA.storagePerSite[site]) {
@@ -254,7 +274,7 @@
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toastMsg');
             toastMsg.innerText = msg;
-            
+
             toast.className = `fixed top-5 right-5 transform transition-all duration-300 z-50 max-w-sm w-full text-white p-4 rounded-lg shadow-xl border-l-4 ${isError ? 'bg-red-900 border-red-500' : 'bg-slate-900 border-emerald-500'}`;
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('toast-show'), 10);
@@ -279,7 +299,7 @@
         async function uploadPhoto(file) {
             const compressed = await compressImage(file);
             const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
-            
+
             const { data, error } = await supabaseClient.storage
                 .from('fuel-photos')
                 .upload(fileName, compressed, { contentType: 'image/jpeg' });
@@ -315,6 +335,7 @@
                     receipt_issued: document.getElementById('receipt_issued').value,
                     no_voucher: document.getElementById('no_voucher').value || null,
                     no_unit: document.getElementById('no_unit').value,
+                    keterangan_unit: document.getElementById('keterangan_unit').value || null,
                     material_type: document.getElementById('material_type').value,
                     hm_fuel_truck: document.getElementById('hm_fuel_truck').value,
                     fuel_amount: parseFloat(document.getElementById('fuel_amount').value),
@@ -328,6 +349,7 @@
                 showToast("SUKSES: Data Fuel berhasil disimpan!");
                 document.getElementById('fuelForm').reset();
                 autoSelectShift(); // Reset shift otomatis sesuai jam saat ini
+                onSiteChange(); // Reset tampilan grid form ke kondisi awal
                 document.getElementById('preview_hm').classList.add('hidden');
                 document.getElementById('preview_liter').classList.add('hidden');
 
