@@ -5,7 +5,7 @@ const MASTER_DATA = {
         "SSB": ["FS-KIDECO", "FT-012", "FT-010", "FT-005", "TANK-002"],
         "KBB": ["FT-006", "TANK-01", "OWNER"],
         "KDC": ["FT-008", "FT-011"],
-        "IWACO": ["FT-04"]
+        "IWACO": ["FT-04", "V254_Sims Jaya Kaltim, PT"]
     },
 
     // Data Pelaksana (PIC) Per Site (Updated)
