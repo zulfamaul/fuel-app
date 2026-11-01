@@ -4,7 +4,7 @@ const MASTER_DATA = {
     storagePerSite: {
         "SSB": ["FS-KIDECO", "FT-012", "FT-010", "FT-005", "TANK-002"],
         "KBB": ["FT-006", "TANK-01", "OWNER"],
-        "KDC": ["FT-08", "FT-13"],
+        "KDC": ["FT-008", "FT-011"],
         "IWACO": ["FT-04"]
     },
 
@@ -21,7 +21,7 @@ const MASTER_DATA = {
         ],
         "KDC": [
             "Septian Kurnia Putra", "Chandra Pasi Putra", "Sharif Pua Nabu", 
-            "Ferry Aldi Maladewa", "Irwan", "Syaipullah"
+            "Ferry Aldi Maladewa", "Irwan", "Syaipullah", "Muhammad Rayhan"
         ],
         "IWACO": [
             "Ardani", "Firmansyah", "Nasikin", "Sabdi Ginanjar"
