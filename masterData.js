@@ -8,7 +8,7 @@ const MASTER_DATA = {
         "IWACO": ["FT-04"]
     },
 
-    // Data Pelaksana (PIC) Per Site
+    // Data Pelaksana (PIC) Per Site (Updated)
     picPerSite: {
         "SSB": [
             "JUMAIRI", "MARSI FADILLAH", "HENGKI GROW", "HERMAN SUNJAYA", 
@@ -16,14 +16,15 @@ const MASTER_DATA = {
             "M. YUSUF", "CRISTYANSEN TANI P"
         ],
         "KBB": [
-            "Rahul Aizal", "Ahmad Dani", "Sadam", "Goklas Simatupang"
+            "Rahul Aizal", "Ahmad Dani", "Sadam", "Goklas Simatupang", 
+            "Rifki Maulana"
         ],
         "KDC": [
             "Septian Kurnia Putra", "Chandra Pasi Putra", "Sharif Pua Nabu", 
             "Ferry Aldi Maladewa", "Irwan", "Syaipullah"
         ],
         "IWACO": [
-            "Ardani", "Firmansyah"
+            "Ardani", "Firmansyah", "Nasikin", "Sabdi Ginanjar"
         ]
     },
 
