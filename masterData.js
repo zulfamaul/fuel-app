@@ -17,7 +17,7 @@ const MASTER_DATA = {
         ],
         "KBB": [
             "Rahul Aizal", "Ahmad Dani", "Muh Maulana Anshori", "Goklas Simatupang", 
-            "Rifki Maulana", "Suryani", Muhammad Hamdan"
+            "Rifki Maulana", "Suryani", "Muhammad Hamdan"
         ],
         "KDC": [
             "Septian Kurnia Putra", "Chandra Pasi Putra", "Sharif Pua Nabu", 
