@@ -24,7 +24,7 @@ const MASTER_DATA = {
             "Ferry Aldi Maladewa", "Irwan", "Syaipullah", "Muhammad Rayhan"
         ],
         "IWACO": [
-            "Ardani", "Firmansyah", "Nasikin", "Sabdi Ginanjar"
+            "Ardani", "Firmansyah", "Nasikin", "Sabdi Ginanjar", "Purnawan"
         ]
     },
 
