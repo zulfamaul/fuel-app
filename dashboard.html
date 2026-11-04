@@ -61,7 +61,7 @@
     <!-- Main Content Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- KPI Metrics Grid (LIS BIRU TUA PEKAT DITIPISKAN JADI 2px AGAR SERAGAM) -->
+        <!-- KPI Metrics Grid -->
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             <!-- Card 1: Total Transaksi -->
@@ -114,7 +114,7 @@
 
         </section>
 
-        <!-- Filter Bar & Actions (Lis Atas Abu-Abu Soft 2px) -->
+        <!-- Filter Bar & Actions -->
         <section class="bg-white p-3 rounded-lg border border-slate-200 border-t-2 border-t-slate-300 shadow-sm flex flex-wrap items-center justify-between gap-3">
             
             <!-- Filters Group -->
@@ -170,7 +170,7 @@
             </button>
         </section>
 
-        <!-- Table Data Section (Lis Atas Abu-Abu Soft 2px) -->
+        <!-- Table Data Section -->
         <section class="bg-white border border-slate-200 border-t-2 border-t-slate-300 rounded-lg shadow-sm overflow-hidden">
             <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
                 <h2 class="text-xs font-semibold text-slate-700 uppercase tracking-wider">Riwayat Transaksi</h2>
@@ -199,7 +199,7 @@
                     </thead>
                     <tbody id="logsTableBody" class="divide-y divide-slate-100 text-slate-700">
                         <tr>
-                            <td colspan="14" class="p-8 text-center text-slate-400">Memuat data transaksi...</td>
+                            <td colspan="13" class="p-8 text-center text-slate-400">Memuat data transaksi...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -503,7 +503,7 @@
 
             // Render Baris Tabel
             if (paginatedLogs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="14" class="p-8 text-center text-slate-400">Tidak ada data transaksi yang sesuai filter.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="13" class="p-8 text-center text-slate-400">Tidak ada data transaksi yang sesuai filter.</td></tr>`;
                 return;
             }
 
@@ -548,21 +548,55 @@
                         <td class="p-3 text-slate-700">${log.pic_name || '-'}</td>
                         <td class="p-3 text-center">
                             <button onclick="openModal('${log.evidence_hm_url}', '${log.evidence_liter_url}')" class="text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 text-[11px] font-medium px-2.5 py-1 rounded transition border border-slate-200">
-                                Foto
+                                Lihat Foto
                             </button>
                         </td>
-                        <td class="p-3 text-center whitespace-nowrap">
-                            <button onclick="openEditModal('${log.id}')" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 text-[11px] font-medium px-2 py-1 rounded transition mr-1 border border-blue-200">Edit</button>
-                            <button onclick="handleDelete('${log.id}')" class="text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 text-[11px] font-medium px-2 py-1 rounded transition border border-rose-200">Hapus</button>
+                        <td class="p-3 text-center">
+                            <button onclick="openEditModal('${log.id}')" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 text-[11px] font-medium px-2.5 py-1 rounded transition border border-blue-200">
+                                Edit
+                            </button>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        // FUNGSI CRUD: OPEN EDIT MODAL & ISI DATA
+        // Pagination Handler Functions
+        function changeRowsPerPage() {
+            rowsPerPage = parseInt(document.getElementById('rowsPerPageSelect').value);
+            currentPage = 1;
+            renderTable();
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(currentlyFilteredLogs.length / rowsPerPage) || 1;
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        }
+
+        // Modal Evidence Handler
+        function openModal(urlHM, urlLiter) {
+            document.getElementById('modalImgHM').src = (urlHM && urlHM !== 'null' && urlHM !== 'undefined') ? urlHM : '';
+            document.getElementById('modalImgLiter').src = (urlLiter && urlLiter !== 'null' && urlLiter !== 'undefined') ? urlLiter : '';
+            document.getElementById('imageModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+
+        // Edit Modal Handler
         function openEditModal(id) {
-            const log = allLogs.find(i => i.id == id);
+            const log = allLogs.find(item => item.id == id);
             if (!log) return;
 
             document.getElementById('editId').value = log.id;
@@ -573,7 +607,7 @@
             document.getElementById('editNoUnit').value = log.no_unit || '';
             document.getElementById('editKeteranganUnit').value = log.keterangan_unit || '';
             document.getElementById('editMaterialType').value = log.material_type || '';
-            document.getElementById('editFuelAmount').value = log.fuel_amount || '';
+            document.getElementById('editFuelAmount').value = log.fuel_amount || 0;
             document.getElementById('editHmFuelTruck').value = log.hm_fuel_truck || '';
             document.getElementById('editNoVoucher').value = log.no_voucher || '';
             document.getElementById('editPicName').value = log.pic_name || '';
@@ -585,18 +619,16 @@
             document.getElementById('editModal').classList.add('hidden');
         }
 
-        // FUNGSI CRUD: SUBMIT UPDATE KE SUPABASE
-        async function handleUpdate(event) {
-            event.preventDefault();
+        async function handleUpdate(e) {
+            e.preventDefault();
             const id = document.getElementById('editId').value;
-
             const updatedData = {
                 site_name: document.getElementById('editSiteName').value,
                 shift: document.getElementById('editShift').value,
                 fuel_storage: document.getElementById('editFuelStorage').value,
                 receipt_issued: document.getElementById('editReceiptIssued').value,
                 no_unit: document.getElementById('editNoUnit').value,
-                keterangan_unit: document.getElementById('editKeteranganUnit').value || null,
+                keterangan_unit: document.getElementById('editKeteranganUnit').value,
                 material_type: document.getElementById('editMaterialType').value,
                 fuel_amount: parseFloat(document.getElementById('editFuelAmount').value) || 0,
                 hm_fuel_truck: document.getElementById('editHmFuelTruck').value,
@@ -614,110 +646,68 @@
                 return;
             }
 
+            alert("Data berhasil diperbarui!");
             closeEditModal();
             fetchLogs();
         }
 
-        // FUNGSI CRUD: DELETE DATA
-        async function handleDelete(id) {
-            if (!confirm("Apakah kamu yakin ingin menghapus data transaksi ini secara permanen?")) return;
-
-            const { error } = await supabaseClient
-                .from('fuel_logs')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
-                alert("Gagal menghapus data: " + error.message);
-                return;
-            }
-
-            fetchLogs();
-        }
-
-        // Kontrol Pagination
-        function prevPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                renderTable();
-            }
-        }
-
-        function nextPage() {
-            const totalPages = Math.ceil(currentlyFilteredLogs.length / rowsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderTable();
-            }
-        }
-
-        function changeRowsPerPage() {
-            rowsPerPage = parseInt(document.getElementById('rowsPerPageSelect').value) || 30;
-            currentPage = 1;
-            renderTable();
-        }
-
+        // Export Excel dengan Tanggal & Waktu Dipisah serta Kolom Konfirmasi Tanggal Tambahan di Kanan
         function exportToExcel() {
             if (currentlyFilteredLogs.length === 0) {
-                alert("Tidak ada data yang dapat diunduh!");
+                alert("Tidak ada data untuk diexport!");
                 return;
             }
 
-            const excelData = currentlyFilteredLogs.map((log, index) => ({
-                "No": index + 1,
-                "Waktu Input": log.created_at ? new Date(log.created_at).toLocaleString('id-ID') : '-',
-                "Site": log.site_name || '-',
-                "Shift": log.shift || '-',
-                "Storage": log.fuel_storage || '-',
-                "Transaksi": log.receipt_issued || '-',
-                "No Unit": log.no_unit || '-',
-                "Keterangan Unit": log.keterangan_unit || '-',
-                "Material": log.material_type || '-',
-                "Jumlah (Liter)": parseFloat(log.fuel_amount) || 0,
-                "HM Truck": log.hm_fuel_truck || '-',
-                "No Voucher": log.no_voucher || '-',
-                "PIC": log.pic_name || '-',
-                "Link Foto HM": log.evidence_hm_url || '-',
-                "Link Foto Liter": log.evidence_liter_url || '-'
-            }));
+            const excelData = currentlyFilteredLogs.map((log, index) => {
+                let tglStr = '-';
+                let wktStr = '-';
+                if (log.created_at) {
+                    const d = new Date(log.created_at);
+                    tglStr = d.toLocaleDateString('id-ID'); // Format Tanggal Saja
+                    wktStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); // Format Waktu Saja
+                }
+
+                return {
+                    "No": index + 1,
+                    "Tanggal": tglStr,
+                    "Waktu": wktStr,
+                    "Site": log.site_name || '-',
+                    "Shift": log.shift || '-',
+                    "Storage": log.fuel_storage || '-',
+                    "Transaksi": log.receipt_issued || '-',
+                    "No Unit": log.no_unit || '-',
+                    "Keterangan Unit": log.keterangan_unit || '-',
+                    "Material": log.material_type || '-',
+                    "Jumlah (Liter)": log.fuel_amount || 0,
+                    "HM Truck": log.hm_fuel_truck || '-',
+                    "No Voucher": log.no_voucher || '-',
+                    "PIC": log.pic_name || '-',
+                    "Konfirmasi Tanggal Site": tglStr // Kolom tambahan konfirmasi di sebelah kanan untuk tim site
+                };
+            });
 
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Fuel");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Fuel Logs");
 
-            const todayStr = new Date().toISOString().slice(0, 10);
-            XLSX.writeFile(workbook, `Rekap_Fuel_BNI_${todayStr}.xlsx`);
+            const siteFilter = document.getElementById('filterSite').value;
+            const fileName = `Fuel_Logs_${siteFilter}_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(workbook, fileName);
         }
 
+        // Event Listener Filter Perubahan
         document.getElementById('filterSite').addEventListener('change', () => { currentPage = 1; renderTable(); });
         document.getElementById('filterShift').addEventListener('change', () => { currentPage = 1; renderTable(); });
         document.getElementById('filterTx').addEventListener('change', () => { currentPage = 1; renderTable(); });
         document.getElementById('startDate').addEventListener('change', () => { currentPage = 1; renderTable(); });
         document.getElementById('endDate').addEventListener('change', () => { currentPage = 1; renderTable(); });
 
-        function subscribeRealtime() {
-            supabaseClient
-                .channel('realtime_fuel_logs')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'fuel_logs' }, (payload) => {
-                    fetchLogs();
-                })
-                .subscribe();
-        }
-
-        function openModal(hmUrl, literUrl) {
-            document.getElementById('modalImgHM').src = hmUrl || '';
-            document.getElementById('modalImgLiter').src = literUrl || '';
-            document.getElementById('imageModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('imageModal').classList.add('hidden');
-        }
-
-        // Inisialisasi Saat Halaman Dimuat
+        // Initial Load
         setDefaultDate();
         fetchLogs();
-        subscribeRealtime();
+
+        // Realtime polling setiap 30 detik agar data selalu ter-update otomatis
+        setInterval(fetchLogs, 30000);
     </script>
 </body>
 </html>
