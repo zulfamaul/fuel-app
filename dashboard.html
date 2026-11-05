@@ -199,7 +199,7 @@
                     </thead>
                     <tbody id="logsTableBody" class="divide-y divide-slate-100 text-slate-700">
                         <tr>
-                            <td colspan="13" class="p-8 text-center text-slate-400">Memuat data transaksi...</td>
+                            <td colspan="14" class="p-8 text-center text-slate-400">Memuat data transaksi...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -503,7 +503,7 @@
 
             // Render Baris Tabel
             if (paginatedLogs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="13" class="p-8 text-center text-slate-400">Tidak ada data transaksi yang sesuai filter.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="14" class="p-8 text-center text-slate-400">Tidak ada data transaksi yang sesuai filter.</td></tr>`;
                 return;
             }
 
@@ -651,7 +651,7 @@
             fetchLogs();
         }
 
-        // Export Excel dengan Tanggal & Waktu Dipisah serta Kolom Konfirmasi Tanggal Tambahan di Kanan
+        // Export Excel dengan Urutan Kolom Sesuai Referensi Gambar Anda
         function exportToExcel() {
             if (currentlyFilteredLogs.length === 0) {
                 alert("Tidak ada data untuk diexport!");
@@ -660,29 +660,31 @@
 
             const excelData = currentlyFilteredLogs.map((log, index) => {
                 let tglStr = '-';
-                let wktStr = '-';
+                let jamStr = '-';
+                let bulanStr = '-';
+
                 if (log.created_at) {
                     const d = new Date(log.created_at);
-                    tglStr = d.toLocaleDateString('id-ID'); // Format Tanggal Saja
-                    wktStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); // Format Waktu Saja
+                    tglStr = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/\./g, '-'); // Contoh: 1-Nov-26
+                    jamStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }); // Contoh: 7:47
+                    bulanStr = d.toLocaleDateString('id-ID', { month: 'long' }).toUpperCase(); // Contoh: NOVEMBER
                 }
 
                 return {
                     "No": index + 1,
                     "Tanggal": tglStr,
-                    "Waktu": wktStr,
-                    "Site": log.site_name || '-',
+                    "Jam": jamStr,
                     "Shift": log.shift || '-',
-                    "Storage": log.fuel_storage || '-',
-                    "Transaksi": log.receipt_issued || '-',
-                    "No Unit": log.no_unit || '-',
-                    "Keterangan Unit": log.keterangan_unit || '-',
-                    "Material": log.material_type || '-',
-                    "Jumlah (Liter)": log.fuel_amount || 0,
-                    "HM Truck": log.hm_fuel_truck || '-',
-                    "No Voucher": log.no_voucher || '-',
-                    "PIC": log.pic_name || '-',
-                    "Konfirmasi Tanggal Site": tglStr // Kolom tambahan konfirmasi di sebelah kanan untuk tim site
+                    "Unit": log.no_unit || '-',
+                    "HM/KM": log.hm_fuel_truck || '-',
+                    "Liter": log.fuel_amount || 0,
+                    "Fuel Storage": log.fuel_storage || '-',
+                    "Supply": "", // Kolom kosong konfirmasi site
+                    "Transfer": "", // Kolom kosong tambahan sesuai referensi
+                    "Driver": log.pic_name || '-',
+                    "Fuelman": log.pic_name || '-',
+                    "Workgroup": log.material_type || '-',
+                    "Bulan": bulanStr
                 };
             });
 
