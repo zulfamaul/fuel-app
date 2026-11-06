@@ -13,7 +13,7 @@ const MASTER_DATA = {
         "SSB": [
             "JUMAIRI", "MARSI FADILLAH", "HENGKI GROW", "HERMAN SUNJAYA", 
             "DIDI GUNAWAN", "M. HAMDANI", "JANI", "GUSTI ABNA Y, S", 
-            "M. YUSUF", "CRISTYANSEN TANI P"
+            "M. YUSUF", "CRISTYANSEN TANI P", "M. Faisal"
         ],
         "KBB": [
             "Rahul Aizal", "Ahmad Dani", "Muh Maulana Anshori", "Goklas Simatupang", 
