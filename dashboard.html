@@ -11,9 +11,9 @@
     <!-- SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; }
         
         /* Animasi Gelombang Tangki Fuel */
         @keyframes wave {
@@ -21,42 +21,17 @@
             50% { transform: translateX(-25%) translateZ(0) scaleY(0.85); }
             100% { transform: translateX(-50%) translateZ(0) scaleY(1); }
         }
-        .wave-animation { animation: wave 3s linear infinite; }
-
-        /* Shape Style: Soft Rounded Claymorphism */
-        .clay-card {
-            background-color: #ffffff;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04), inset 0 2px 4px 0 rgba(255, 255, 255, 0.9);
-            border: 1.5px solid #e2e8f0;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .clay-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px -5px rgba(15, 23, 42, 0.12), 0 10px 12px -5px rgba(15, 23, 42, 0.06);
-        }
-
-        .clay-pill-blue {
-            background: #000080;
-            color: #ffffff;
-            border-radius: 9999px;
-            box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 4px 6px -1px rgba(0,0,128,0.2);
-        }
-
-        .clay-inset-field {
-            background-color: #f8fafc;
-            border-radius: 1rem;
-            border: 1.5px solid #e2e8f0;
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.04);
+        .wave-animation {
+            animation: wave 3s linear infinite;
         }
 
         /* Warna Biru Tua Pekat / Dark Navy Khas BNI */
         .border-t-bni-navy {
-            border-top: 4px solid #000080 !important;
+            border-top-color: #0f172a !important;
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
     <!-- Top Navigation Header dengan Border Merah Khas BNI (2px) -->
     <header class="bg-white border-b-2 border-red-600 sticky top-0 z-30 shadow-sm">
@@ -64,7 +39,7 @@
             <div class="flex items-center justify-between h-16">
                 <!-- Brand / Logo -->
                 <div class="flex items-center space-x-3">
-                    <img src="./BN.png" alt="BNI Logo" class="h-8 w-auto object-contain" onerror="this.onerror=null; this.src='logo.PNG';">
+                    <img src="./logo.png" alt="BNI Logo" class="h-8 w-auto object-contain" onerror="this.onerror=null; this.src='logo.PNG';">
                     <div class="h-5 w-px bg-slate-200"></div>
                     <div>
                         <h1 class="text-sm font-bold text-slate-900 tracking-tight">Fuel Monitoring System</h1>
@@ -86,79 +61,77 @@
     <!-- Main Content Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- KPI Metrics Grid (Menggunakan Kotak Claymorphism Baru) -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- KPI Metrics Grid -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             <!-- Card 1: Total Transaksi -->
-            <div class="clay-card border-t-bni-navy p-5 flex flex-col justify-between">
-                <div class="flex items-center justify-between">
-                    <span class="clay-pill-blue px-3 py-1 text-[10px] font-bold tracking-wider uppercase">METRIC</span>
-                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold border border-slate-200">Records</span>
-                </div>
-                <div class="mt-4">
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Total Transaksi</p>
-                    <p id="statCount" class="text-3xl font-extrabold text-slate-900 mt-1">0</p>
+            <div class="bg-white p-4 rounded-lg border border-slate-200 border-t-2 border-t-bni-navy shadow-sm flex flex-col justify-between">
+                <p class="text-xs font-medium text-slate-500">Total Transaksi</p>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <p id="statCount" class="text-2xl font-semibold text-slate-900">0</p>
                 </div>
             </div>
 
             <!-- Card 2: Dinamis Sesuai Jenis Filter TX -->
-            <div class="clay-card border-t-bni-navy p-5 flex flex-col justify-between">
-                <div class="flex items-center justify-between">
-                    <span class="clay-pill-blue px-3 py-1 text-[10px] font-bold tracking-wider uppercase">VOLUME</span>
-                    <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full font-bold border border-emerald-200">Liters</span>
-                </div>
-                <div class="mt-4">
-                    <p id="statTxLabel" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Total Volume Solar</p>
-                    <p id="statTxAmount" class="text-3xl font-extrabold text-emerald-600 mt-1">0 L</p>
+            <div class="bg-white p-4 rounded-lg border border-slate-200 border-t-2 border-t-bni-navy shadow-sm flex flex-col justify-between">
+                <p id="statTxLabel" class="text-xs font-medium text-slate-500">Total Volume Solar</p>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <p id="statTxAmount" class="text-2xl font-semibold text-emerald-600">0 L</p>
                 </div>
             </div>
 
             <!-- Card 3: Site Aktif -->
-            <div class="clay-card border-t-bni-navy p-5 flex flex-col justify-between">
-                <div class="flex items-center justify-between">
-                    <span class="clay-pill-blue px-3 py-1 text-[10px] font-bold tracking-wider uppercase">LOCATION</span>
-                    <span class="text-[10px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full font-bold border border-slate-200">Site</span>
-                </div>
-                <div class="mt-4">
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Site Aktif</p>
-                    <p id="statActiveSite" class="text-2xl font-extrabold text-slate-900 truncate mt-1">ALL SITE</p>
+            <div class="bg-white p-4 rounded-lg border border-slate-200 border-t-2 border-t-bni-navy shadow-sm flex flex-col justify-between">
+                <p class="text-xs font-medium text-slate-500">Site</p>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <p id="statActiveSite" class="text-2xl font-semibold text-slate-900 truncate">ALL SITE</p>
                 </div>
             </div>
 
             <!-- Card 4: Animated Fuel Tank Widget -->
-            <div class="clay-card border-t-bni-navy p-4 flex items-center space-x-4">
-                <div class="relative w-14 h-18 bg-slate-900 border-2 border-slate-700 rounded-2xl overflow-hidden flex-shrink-0 flex flex-col justify-end shadow-inner">
+            <div class="bg-white p-3.5 rounded-lg border border-slate-200 border-t-2 border-t-bni-navy shadow-sm flex items-center space-x-3.5">
+                <!-- Visual Tangki -->
+                <div class="relative w-12 h-16 bg-slate-900 border-2 border-slate-700 rounded-md overflow-hidden flex-shrink-0 flex flex-col justify-end shadow-inner">
+                    <!-- Penanda Garis Level Tangki -->
+                    <div class="absolute inset-0 flex flex-col justify-between p-1 z-10 opacity-30 pointer-events-none">
+                        <div class="w-full h-px bg-white"></div>
+                        <div class="w-full h-px bg-white"></div>
+                        <div class="w-full h-px bg-white"></div>
+                    </div>
+                    <!-- Cairan Air Cyan/Biru dengan Animasi Wave -->
                     <div id="tankFluid" class="w-[200%] bg-gradient-to-t from-cyan-600 to-blue-500 wave-animation transition-all duration-700 ease-out relative opacity-90" style="height: 0%;">
-                        <div class="absolute top-0 left-0 w-full h-1.5 bg-cyan-300 shadow-sm"></div>
+                        <div class="absolute top-0 left-0 w-full h-1 bg-cyan-300 shadow-sm"></div>
                     </div>
                 </div>
+
+                <!-- Informasi Sisa Stok -->
                 <div class="flex-1 min-w-0">
-                    <span class="clay-pill-blue px-2.5 py-0.5 text-[9px] font-bold tracking-wider uppercase">STOCK</span>
-                    <p class="text-[11px] font-bold text-slate-500 uppercase tracking-tight mt-1">Sisa Stok Fuel</p>
-                    <p id="tankVolume" class="text-xl font-extrabold text-slate-900 truncate mt-0.5">0 L</p>
+                    <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-tight">Sisa Stok fuel</p>
+                    <p id="tankVolume" class="text-xl font-bold text-slate-900 truncate mt-1">0 L</p>
+                    <p class="text-[10px] text-slate-400 truncate mt-0.5"></p>
                 </div>
             </div>
 
         </section>
 
-        <!-- Filter Bar & Actions (Menggunakan Kotak Claymorphism Baru) -->
-        <section class="clay-card p-4 flex flex-wrap items-center justify-between gap-4">
+        <!-- Filter Bar & Actions -->
+        <section class="bg-white p-3 rounded-lg border border-slate-200 border-t-2 border-t-slate-300 shadow-sm flex flex-wrap items-center justify-between gap-3">
             
             <!-- Filters Group -->
             <div class="flex flex-wrap items-center gap-3">
                 <!-- Date Filter -->
-                <div class="clay-inset-field flex items-center space-x-2 px-3 py-2">
-                    <span class="text-xs font-bold text-slate-500">Tanggal:</span>
-                    <input type="date" id="startDate" class="bg-transparent text-xs font-bold text-slate-700 outline-none">
+                <div class="flex items-center space-x-1.5 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-200">
+                    <span class="text-xs font-medium text-slate-500">Tanggal:</span>
+                    <input type="date" id="startDate" class="bg-transparent text-xs font-medium text-slate-700 outline-none">
                     <span class="text-xs text-slate-400">s/d</span>
-                    <input type="date" id="endDate" class="bg-transparent text-xs font-bold text-slate-700 outline-none">
+                    <input type="date" id="endDate" class="bg-transparent text-xs font-medium text-slate-700 outline-none">
                     <button onclick="resetDateFilter()" title="Reset Tanggal" class="text-xs text-slate-400 hover:text-slate-600 px-1 font-bold">✕</button>
                 </div>
 
                 <!-- Site Filter -->
                 <div class="flex items-center space-x-1.5">
-                    <label for="filterSite" class="text-xs font-bold text-slate-500">Site:</label>
-                    <select id="filterSite" class="clay-inset-field text-xs font-bold text-slate-700 px-3 py-2 outline-none">
+                    <label for="filterSite" class="text-xs font-medium text-slate-500">Site:</label>
+                    <select id="filterSite" class="bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 rounded px-2.5 py-1.5 outline-none focus:border-slate-400">
                         <option value="ALL">All Site</option>
                         <option value="SSB">SSB</option>
                         <option value="KBB">KBB</option>
@@ -169,18 +142,18 @@
 
                 <!-- Shift Filter -->
                 <div class="flex items-center space-x-1.5">
-                    <label for="filterShift" class="text-xs font-bold text-slate-500">Shift:</label>
-                    <select id="filterShift" class="clay-inset-field text-xs font-bold text-slate-700 px-3 py-2 outline-none">
+                    <label for="filterShift" class="text-xs font-medium text-slate-500">Shift:</label>
+                    <select id="filterShift" class="bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 rounded px-2.5 py-1.5 outline-none focus:border-slate-400">
                         <option value="ALL">All Shift</option>
                         <option value="Day">Day</option>
                         <option value="Night">Night</option>
                     </select>
                 </div>
 
-                <!-- TX Filter (Diperbarui dengan Opsi Transaksi Baru) -->
+                <!-- TX Filter -->
                 <div class="flex items-center space-x-1.5">
-                    <label for="filterTx" class="text-xs font-bold text-slate-500">Transaction:</label>
-                    <select id="filterTx" class="clay-inset-field text-xs font-bold text-slate-700 px-3 py-2 outline-none">
+                    <label for="filterTx" class="text-xs font-medium text-slate-500">Transaction:</label>
+                    <select id="filterTx" class="bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 rounded px-2.5 py-1.5 outline-none focus:border-slate-400">
                         <option value="ALL">All Trx</option>
                         <option value="ISSUED">Issued</option>
                         <option value="RECEIPT">Receipt</option>
@@ -190,42 +163,39 @@
                 </div>
             </div>
 
-            <!-- Download Button -->
-            <button onclick="exportToExcel()" title="Download Excel" class="p-2.5 text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-2xl transition flex items-center justify-center shadow-xs">
+            <!-- Download Button (Icon Only) -->
+            <button onclick="exportToExcel()" title="Download Excel" class="p-2 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded transition flex items-center justify-center">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
             </button>
         </section>
 
-        <!-- Table Data Section (Menggunakan Kotak Claymorphism Baru) -->
-        <section class="clay-card overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/70">
-                <div class="flex items-center space-x-2">
-                    <span class="w-2.5 h-2.5 bg-[#000080] rounded-full"></span>
-                    <h2 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Riwayat Transaksi</h2>
-                </div>
-                <span class="text-[11px] text-slate-400 font-medium bg-white px-3 py-1 rounded-full border border-slate-200">HO Monitoring Control</span>
+        <!-- Table Data Section -->
+        <section class="bg-white border border-slate-200 border-t-2 border-t-slate-300 rounded-lg shadow-sm overflow-hidden">
+            <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+                <h2 class="text-xs font-semibold text-slate-700 uppercase tracking-wider">Riwayat Transaksi</h2>
+                <span class="text-[11px] text-slate-400">HO Monitoring Control</span>
             </div>
             
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
-                    <thead class="bg-slate-100/70 border-b border-slate-200 text-slate-600 font-semibold">
+                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-medium">
                         <tr>
-                            <th class="p-3.5">Waktu Input</th>
-                            <th class="p-3.5">Site</th>
-                            <th class="p-3.5">Shift</th>
-                            <th class="p-3.5">Storage</th>
-                            <th class="p-3.5">Transaksi</th>
-                            <th class="p-3.5">No Unit</th>
-                            <th class="p-3.5">Keterangan Unit</th>
-                            <th class="p-3.5">Material</th>
-                            <th class="p-3.5">Liter</th>
-                            <th class="p-3.5">HM Truck</th>
-                            <th class="p-3.5">Voucher</th>
-                            <th class="p-3.5">PIC</th>
-                            <th class="p-3.5 text-center">Evidence</th>
-                            <th class="p-3.5 text-center">Action</th>
+                            <th class="p-3">Waktu Input</th>
+                            <th class="p-3">Site</th>
+                            <th class="p-3">Shift</th>
+                            <th class="p-3">Storage</th>
+                            <th class="p-3">Transaksi</th>
+                            <th class="p-3">No Unit</th>
+                            <th class="p-3">Keterangan Unit</th>
+                            <th class="p-3">Material</th>
+                            <th class="p-3">Liter</th>
+                            <th class="p-3">HM Truck</th>
+                            <th class="p-3">Voucher</th>
+                            <th class="p-3">PIC</th>
+                            <th class="p-3 text-center">Evidence</th>
+                            <th class="p-3 text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody id="logsTableBody" class="divide-y divide-slate-100 text-slate-700">
@@ -237,10 +207,10 @@
             </div>
 
             <!-- Footer Pagination Bar -->
-            <div class="px-6 py-4 border-t border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+            <div class="px-4 py-3 border-t border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
                 <div class="flex items-center space-x-2">
                     <span>Tampilkan</span>
-                    <select id="rowsPerPageSelect" onchange="changeRowsPerPage()" class="clay-inset-field font-semibold px-2.5 py-1 outline-none">
+                    <select id="rowsPerPageSelect" onchange="changeRowsPerPage()" class="bg-white border border-slate-200 text-xs font-medium text-slate-700 rounded px-2 py-1 outline-none">
                         <option value="10">10</option>
                         <option value="20">20</option>
                         <option value="30" selected>30</option>
@@ -250,11 +220,11 @@
                 </div>
 
                 <div class="flex items-center space-x-1">
-                    <button id="prevBtn" onclick="prevPage()" class="px-3.5 py-1.5 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-xs transition">
+                    <button id="prevBtn" onclick="prevPage()" class="px-3 py-1 bg-white border border-slate-200 rounded text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition">
                         &larr; Prev
                     </button>
-                    <span id="pageIndicator" class="px-3 py-1 font-extrabold text-slate-700">Halaman 1</span>
-                    <button id="nextBtn" onclick="nextPage()" class="px-3.5 py-1.5 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-xs transition">
+                    <span id="pageIndicator" class="px-3 py-1 font-semibold text-slate-700">Halaman 1</span>
+                    <button id="nextBtn" onclick="nextPage()" class="px-3 py-1 bg-white border border-slate-200 rounded text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition">
                         Next &rarr;
                     </button>
                 </div>
@@ -263,40 +233,36 @@
     </main>
 
     <!-- Evidence Modal -->
-    <div id="imageModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 relative shadow-2xl border border-slate-200">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold p-1 rounded-full bg-slate-100 w-8 h-8 flex items-center justify-center transition">✕</button>
-            <h3 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">Evidence Transaksi</h3>
+    <div id="imageModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl max-w-2xl w-full p-5 relative shadow-xl border border-slate-200">
+            <button onclick="closeModal()" class="absolute top-3 right-3 text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">Evidence Transaksi</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <p class="text-xs font-bold text-slate-600 mb-2">Evidence HM Unit</p>
-                    <div class="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 h-56 flex items-center justify-center shadow-inner">
-                        <img id="modalImgHM" src="" class="w-full h-full object-contain" alt="Foto HM">
-                    </div>
+                    <p class="text-xs font-medium text-slate-500 mb-2">Evidence HM Unit</p>
+                    <img id="modalImgHM" src="" class="w-full h-56 object-cover rounded-lg border border-slate-200 bg-slate-50" alt="Foto HM">
                 </div>
                 <div>
-                    <p class="text-xs font-bold text-slate-600 mb-2">Evidence Liter</p>
-                    <div class="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 h-56 flex items-center justify-center shadow-inner">
-                        <img id="modalImgLiter" src="" class="w-full h-full object-contain" alt="Foto Liter">
-                    </div>
+                    <p class="text-xs font-medium text-slate-500 mb-2">Evidence Liter</p>
+                    <img id="modalImgLiter" src="" class="w-full h-56 object-cover rounded-lg border border-slate-200 bg-slate-50" alt="Foto Liter">
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Edit Modal (CRUD Update) -->
-    <div id="editModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 relative shadow-2xl border border-slate-200">
+    <div id="editModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 relative shadow-xl border border-slate-200">
             <button onclick="closeEditModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold">✕</button>
-            <h3 class="text-sm font-extrabold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">Edit Data Transaksi</h3>
+            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">Edit Data Transaksi</h3>
             
             <form id="editForm" onsubmit="handleUpdate(event)" class="space-y-4 text-xs">
                 <input type="hidden" id="editId">
                 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">Site</label>
-                        <select id="editSiteName" class="w-full clay-inset-field p-2.5 outline-none font-semibold">
+                        <label class="block font-medium text-slate-600 mb-1">Site</label>
+                        <select id="editSiteName" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                             <option value="SSB">SSB</option>
                             <option value="KBB">KBB</option>
                             <option value="IWACO">IWACO</option>
@@ -304,8 +270,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">Shift</label>
-                        <select id="editShift" class="w-full clay-inset-field p-2.5 outline-none font-semibold">
+                        <label class="block font-medium text-slate-600 mb-1">Shift</label>
+                        <select id="editShift" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                             <option value="Day">Day</option>
                             <option value="Night">Night</option>
                         </select>
@@ -314,12 +280,12 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">Storage</label>
-                        <input type="text" id="editFuelStorage" class="w-full clay-inset-field p-2.5 outline-none font-semibold">
+                        <label class="block font-medium text-slate-600 mb-1">Storage</label>
+                        <input type="text" id="editFuelStorage" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">Transaction</label>
-                        <select id="editReceiptIssued" class="w-full clay-inset-field p-2.5 outline-none font-semibold">
+                        <label class="block font-medium text-slate-600 mb-1">Transaction</label>
+                        <select id="editReceiptIssued" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                             <option value="ISSUED">ISSUED</option>
                             <option value="RECEIPT">RECEIPT</option>
                             <option value="TRANSFER INTERN">TRANSFER INTERN</option>
@@ -330,45 +296,45 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">No Unit</label>
-                        <input type="text" id="editNoUnit" class="w-full clay-inset-field p-2.5 outline-none font-semibold">
+                        <label class="block font-medium text-slate-600 mb-1">No Unit</label>
+                        <input type="text" id="editNoUnit" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">Keterangan Unit</label>
-                        <input type="text" id="editKeteranganUnit" placeholder="Khusus SSB..." class="w-full clay-inset-field p-2.5 outline-none font-semibold">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Material Type</label>
-                        <input type="text" id="editMaterialType" class="w-full clay-inset-field p-2.5 outline-none font-semibold">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-600 mb-1">Jumlah (Liter)</label>
-                        <input type="number" step="any" id="editFuelAmount" class="w-full clay-inset-field p-2.5 outline-none font-semibold">
+                        <label class="block font-medium text-slate-600 mb-1">Keterangan Unit</label>
+                        <input type="text" id="editKeteranganUnit" placeholder="Khusus SSB..." class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">HM Fuel Truck</label>
-                        <input type="text" id="editHmFuelTruck" class="w-full clay-inset-field p-2.5 outline-none font-semibold">
+                        <label class="block font-medium text-slate-600 mb-1">Material Type</label>
+                        <input type="text" id="editMaterialType" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-600 mb-1">No Voucher</label>
-                        <input type="text" id="editNoVoucher" class="w-full clay-inset-field p-2.5 outline-none font-semibold">
+                        <label class="block font-medium text-slate-600 mb-1">Jumlah (Liter)</label>
+                        <input type="number" step="any" id="editFuelAmount" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">HM Fuel Truck</label>
+                        <input type="text" id="editHmFuelTruck" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">No Voucher</label>
+                        <input type="text" id="editNoVoucher" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block font-bold text-slate-600 mb-1">PIC Name</label>
-                    <input type="text" id="editPicName" class="w-full clay-inset-field p-2.5 outline-none font-semibold">
+                    <label class="block font-medium text-slate-600 mb-1">PIC Name</label>
+                    <input type="text" id="editPicName" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                 </div>
 
                 <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition font-bold">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-[#000080] text-white font-bold rounded-xl hover:bg-blue-900 transition shadow-md">Simpan Perubahan</button>
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded hover:bg-slate-200 transition">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-900 text-white font-semibold rounded hover:bg-blue-800 transition">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
@@ -469,24 +435,24 @@
                 totalVolume = currentlyFilteredLogs
                     .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'ISSUED')
                     .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
-                txAmount.className = "text-3xl font-extrabold text-rose-600 mt-1";
+                txAmount.className = "text-2xl font-semibold text-rose-600";
             } else if (filterTxVal === 'RECEIPT') {
                 txLabel.innerText = "Total Solar Receipt";
                 totalVolume = currentlyFilteredLogs
                     .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'RECEIPT')
                     .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
-                txAmount.className = "text-3xl font-extrabold text-emerald-600 mt-1";
+                txAmount.className = "text-2xl font-semibold text-emerald-600";
             } else if (filterTxVal.includes('TRANSFER')) {
                 txLabel.innerText = `Total ${filterTxVal}`;
                 totalVolume = currentlyFilteredLogs
                     .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === filterTxVal)
                     .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
-                txAmount.className = "text-3xl font-extrabold text-sky-600 mt-1";
+                txAmount.className = "text-2xl font-semibold text-sky-600";
             } else {
                 txLabel.innerText = "Total Volume Solar";
                 totalVolume = currentlyFilteredLogs
                     .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
-                txAmount.className = "text-3xl font-extrabold text-emerald-600 mt-1";
+                txAmount.className = "text-2xl font-semibold text-slate-900";
             }
             txAmount.innerText = `${totalVolume.toLocaleString('id-ID')} L`;
 
@@ -584,12 +550,12 @@
                         <td class="p-3 text-slate-500">${log.no_voucher || '-'}</td>
                         <td class="p-3 text-slate-700">${log.pic_name || '-'}</td>
                         <td class="p-3 text-center">
-                            <button onclick="openModal('${log.evidence_hm_url}', '${log.evidence_liter_url}')" class="text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 text-[11px] font-medium px-3 py-1 rounded-xl transition border border-slate-200 shadow-xs">
+                            <button onclick="openModal('${log.evidence_hm_url}', '${log.evidence_liter_url}')" class="text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 text-[11px] font-medium px-2.5 py-1 rounded transition border border-slate-200">
                                 Lihat Foto
                             </button>
                         </td>
                         <td class="p-3 text-center">
-                            <button onclick="openEditModal('${log.id}')" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 text-[11px] font-medium px-3 py-1 rounded-xl transition border border-blue-200 shadow-xs">
+                            <button onclick="openEditModal('${log.id}')" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 text-[11px] font-medium px-2.5 py-1 rounded transition border border-blue-200">
                                 Edit
                             </button>
                         </td>
