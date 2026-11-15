@@ -465,7 +465,6 @@
                 .filter(i => (i.receipt_issued || '').toString().trim().toUpperCase() === 'RECEIPT')
                 .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
 
-            // Pengeluaran stok mencakup Issued serta Transfer Intern & Transfer Site
             const totalOutSite = siteLogsForStock
                 .filter(i => ['ISSUED', 'TRANSFER INTERN', 'TRANSFER SITE'].includes((i.receipt_issued || '').toString().trim().toUpperCase()))
                 .reduce((acc, curr) => acc + (parseFloat(curr.fuel_amount) || 0), 0);
@@ -654,7 +653,7 @@
             fetchLogs();
         }
 
-        // Export Excel
+        // Export Excel dengan Penyesuaian Tanggal Produksi & Shift Sesuai Aturan Site
         function exportToExcel() {
             if (currentlyFilteredLogs.length === 0) {
                 alert("Tidak ada data untuk diexport!");
@@ -665,11 +664,27 @@
                 let tglStr = '-';
                 let jamStr = '-';
                 let bulanStr = '-';
+                let shiftStr = log.shift || '-';
 
                 if (log.created_at) {
                     const d = new Date(log.created_at);
+                    let hour = d.getHours();
+
+                    // ATURAN SITE: 
+                    // Jika jam 00:00 s/d 06:59, tanggal ditarik mundur 1 hari (masuk shift malam sebelumnya)
+                    if (hour < 7) {
+                        d.setDate(d.getDate() - 1);
+                        shiftStr = 'Night';
+                    } else if (hour >= 19) {
+                        shiftStr = 'Night';
+                    } else {
+                        shiftStr = 'Day';
+                    }
+
                     tglStr = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/\./g, '-');
-                    jamStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+                    
+                    const dOriginal = new Date(log.created_at);
+                    jamStr = dOriginal.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
                     bulanStr = d.toLocaleDateString('id-ID', { month: 'long' }).toUpperCase();
                 }
 
@@ -677,7 +692,7 @@
                     "No": index + 1,
                     "Tanggal": tglStr,
                     "Jam": jamStr,
-                    "Shift": log.shift || '-',
+                    "Shift": shiftStr,
                     "Unit": log.no_unit || '-',
                     "HM/KM": log.hm_fuel_truck || '-',
                     "Liter": log.fuel_amount || 0,
