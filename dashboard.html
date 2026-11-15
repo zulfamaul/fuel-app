@@ -191,7 +191,7 @@
                             <th class="p-3">Keterangan Unit</th>
                             <th class="p-3">Material</th>
                             <th class="p-3">Liter</th>
-                            <th class="p-3">HM Truck</th>
+                            <th class="p-3">HM Unit</th>
                             <th class="p-3">Voucher</th>
                             <th class="p-3">PIC</th>
                             <th class="p-3 text-center">Evidence</th>
@@ -318,7 +318,7 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-medium text-slate-600 mb-1">HM Fuel Truck</label>
+                        <label class="block font-medium text-slate-600 mb-1">HM Unit</label>
                         <input type="text" id="editHmFuelTruck" class="w-full bg-slate-50 border border-slate-200 rounded p-2 outline-none focus:border-slate-400">
                     </div>
                     <div>
@@ -545,7 +545,7 @@
                         <td class="p-3 text-slate-600 italic">${keteranganVal}</td>
                         <td class="p-3 text-slate-600">${log.material_type || '-'}</td>
                         <td class="p-3 font-semibold text-slate-900">${log.fuel_amount || 0} L</td>
-                        <td class="p-3 text-slate-600 font-mono text-[11px]">${log.hm_fuel_truck || '-'}</td>
+                        <td class="p-3 text-slate-600 font-mono text-[11px]">${log.hm_fuel_unit || '-'}</td>
                         <td class="p-3 text-slate-500">${log.no_voucher || '-'}</td>
                         <td class="p-3 text-slate-700">${log.pic_name || '-'}</td>
                         <td class="p-3 text-center">
@@ -610,7 +610,7 @@
             document.getElementById('editKeteranganUnit').value = log.keterangan_unit || '';
             document.getElementById('editMaterialType').value = log.material_type || '';
             document.getElementById('editFuelAmount').value = log.fuel_amount || 0;
-            document.getElementById('editHmFuelTruck').value = log.hm_fuel_truck || '';
+            document.getElementById('editHmFuelTruck').value = log.hm_fuel_unit || '';
             document.getElementById('editNoVoucher').value = log.no_voucher || '';
             document.getElementById('editPicName').value = log.pic_name || '';
 
@@ -633,7 +633,7 @@
                 keterangan_unit: document.getElementById('editKeteranganUnit').value,
                 material_type: document.getElementById('editMaterialType').value,
                 fuel_amount: parseFloat(document.getElementById('editFuelAmount').value) || 0,
-                hm_fuel_truck: document.getElementById('editHmFuelTruck').value,
+                hm_fuel_unit: document.getElementById('editHmFuelTruck').value,
                 no_voucher: document.getElementById('editNoVoucher').value,
                 pic_name: document.getElementById('editPicName').value
             };
@@ -694,7 +694,7 @@
                     "Jam": jamStr,
                     "Shift": shiftStr,
                     "Unit": log.no_unit || '-',
-                    "HM/KM": log.hm_fuel_truck || '-',
+                    "HM/KM": log.hm_fuel_unit || '-',
                     "Liter": log.fuel_amount || 0,
                     "Fuel Storage": log.fuel_storage || '-',
                     "Supply": "",
