@@ -131,8 +131,8 @@
             <!-- HM & Jumlah Liter -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">HM Fuel Truck *</label>
-                    <input type="text" id="hm_fuel_truck" placeholder="Contoh: 20000" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">HM Fuel Unit *</label>
+                    <input type="text" id="hm_fuel_unit" placeholder="Contoh: 20000" required class="w-full border border-slate-300 rounded p-2.5 text-sm focus:ring-2 focus:ring-slate-900 outline-none transition">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jumlah Liter *</label>
@@ -324,7 +324,7 @@
                     no_unit: document.getElementById('no_unit').value,
                     unit_remark: document.getElementById('unit_remark').value || null,
                     material_type: document.getElementById('material_type').value,
-                    hm_fuel_truck: document.getElementById('hm_fuel_truck').value,
+                    hm_fuel_unit: document.getElementById('hm_fuel_unit').value,
                     fuel_amount: parseFloat(document.getElementById('fuel_amount').value),
                     evidence_hm_url: urlHM,
                     evidence_liter_url: urlLiter,
