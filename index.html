@@ -175,10 +175,11 @@
         // Load Initial Master Data (Auto-Complete No Unit)
         document.addEventListener("DOMContentLoaded", function() {
             initUnitDatalist();
-            autoSelectShift();
+            autoSelectShiftAndLogic();
         });
 
-        function autoSelectShift() {
+        // Logika Otomatis Shift berdasarkan Jam Operasional (07:00 - 19:00 = Day, 19:00 - 07:00 = Night)
+        function autoSelectShiftAndLogic() {
             const currentHour = new Date().getHours();
             const shiftSelect = document.getElementById("shift");
             if (currentHour >= 7 && currentHour < 19) {
@@ -306,6 +307,13 @@
                 const urlHM = await uploadPhoto(fileHM);
                 const urlLiter = await uploadPhoto(fileLiter);
 
+                // ATURAN TANGGAL PRODUKSI: Jika jam input antara 00:00 s/d 06:59, 
+                // maka tanggal produksi ditarik mundur 1 hari (masuk ke shift malam tanggal sebelumnya)
+                const now = new Date();
+                if (now.getHours() < 7) {
+                    now.setDate(now.getDate() - 1);
+                }
+
                 const payload = {
                     site_name: document.getElementById('site_name').value,
                     shift: document.getElementById('shift').value,
@@ -319,7 +327,8 @@
                     hm_fuel_truck: document.getElementById('hm_fuel_truck').value,
                     fuel_amount: parseFloat(document.getElementById('fuel_amount').value),
                     evidence_hm_url: urlHM,
-                    evidence_liter_url: urlLiter
+                    evidence_liter_url: urlLiter,
+                    created_at: now.toISOString() // Mengirimkan waktu/tanggal produksi yang sudah disesuaikan
                 };
 
                 const { error } = await supabaseClient.from('fuel_logs').insert([payload]);
@@ -327,7 +336,7 @@
 
                 showToast("SUKSES: Data Fuel berhasil disimpan!");
                 document.getElementById('fuelForm').reset();
-                autoSelectShift();
+                autoSelectShiftAndLogic();
                 document.getElementById('preview_hm').classList.add('hidden');
                 document.getElementById('preview_liter').classList.add('hidden');
 
