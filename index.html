@@ -176,6 +176,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             initUnitDatalist();
             autoSelectShiftAndLogic();
+            updateClock();
         });
 
         // Logika Otomatis Shift berdasarkan Jam Operasional (07:00 - 19:00 = Day, 19:00 - 07:00 = Night)
@@ -232,23 +233,28 @@
 
         function updateClock() {
             const now = new Date();
-            document.getElementById('liveClock').innerText = now.toLocaleTimeString('id-ID');
-            document.getElementById('liveDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
+            const clockEl = document.getElementById('liveClock');
+            const dateEl = document.getElementById('liveDate');
+            if (clockEl) clockEl.innerText = now.toLocaleTimeString('id-ID');
+            if (dateEl) dateEl.innerText = now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
         }
         setInterval(updateClock, 1000);
         updateClock();
 
         function setupPreview(inputId, previewId) {
-            document.getElementById(inputId).addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                const preview = document.getElementById(previewId);
-                if (file) {
-                    preview.src = URL.createObjectURL(file);
-                    preview.classList.remove('hidden');
-                } else {
-                    preview.classList.add('hidden');
-                }
-            });
+            const inputEl = document.getElementById(inputId);
+            if (inputEl) {
+                inputEl.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    const preview = document.getElementById(previewId);
+                    if (file && preview) {
+                        preview.src = URL.createObjectURL(file);
+                        preview.classList.remove('hidden');
+                    } else if (preview) {
+                        preview.classList.add('hidden');
+                    }
+                });
+            }
         }
         setupPreview('evidence_hm', 'preview_hm');
         setupPreview('evidence_liter', 'preview_liter');
@@ -256,8 +262,9 @@
         function showToast(msg, isError = false) {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toastMsg');
-            toastMsg.innerText = msg;
+            if (!toast || !toastMsg) return;
 
+            toastMsg.innerText = msg;
             toast.className = `fixed top-5 right-5 transform transition-all duration-300 z-50 max-w-sm w-full text-white p-4 rounded-lg shadow-xl border-l-4 ${isError ? 'bg-red-900 border-red-500' : 'bg-slate-900 border-emerald-500'}`;
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('toast-show'), 10);
@@ -267,8 +274,10 @@
 
         function hideToast() {
             const toast = document.getElementById('toast');
-            toast.classList.remove('toast-show');
-            setTimeout(() => toast.classList.add('hidden'), 300);
+            if (toast) {
+                toast.classList.remove('toast-show');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }
         }
 
         async function compressImage(file) {
@@ -340,7 +349,7 @@
                 document.getElementById('preview_hm').classList.add('hidden');
                 document.getElementById('preview_liter').classList.add('hidden');
 
-            } cmd_catch (err) {
+            } catch (err) {
                 showToast("GAGAL: " + (err.message || err), true);
             } finally {
                 btn.disabled = false;
