@@ -340,7 +340,7 @@
         </div>
     </div>
 
-<!-- JavaScript Logic -->
+    <!-- JavaScript Logic -->
     <script>
         const SUPABASE_URL = "https://uahepttofqbbgzysfyqc.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_Ibh4P-BuQxTtLLBIEtHwQg_8sJtDh5w";
@@ -585,10 +585,19 @@
             }
         }
 
-        // Modal Evidence Handler
+        // Modal Evidence Handler yang Diperbarui untuk Link Google Drive
         function openModal(urlHM, urlLiter) {
-            document.getElementById('modalImgHM').src = (urlHM && urlHM !== 'null' && urlHM !== 'undefined') ? urlHM : '';
-            document.getElementById('modalImgLiter').src = (urlLiter && urlLiter !== 'null' && urlLiter !== 'undefined') ? urlLiter : '';
+            function convertDriveLink(url) {
+                if (!url || url === 'null' || url === 'undefined') return '';
+                const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                }
+                return url;
+            }
+
+            document.getElementById('modalImgHM').src = convertDriveLink(urlHM);
+            document.getElementById('modalImgLiter').src = convertDriveLink(urlLiter);
             document.getElementById('imageModal').classList.remove('hidden');
         }
 
