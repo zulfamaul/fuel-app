@@ -172,6 +172,9 @@
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // URL WEB APP GOOGLE DRIVE ABANG
+        const GOOGLE_DRIVE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6hL3oRAM7ZAcviCHRCQKKcd7k8hQ7as-5N_7oh4bqbtRWGNgqWM4LSoSbn79ekUzHdg/exec";
+
         // Load Initial Master Data (Auto-Complete No Unit)
         document.addEventListener("DOMContentLoaded", function() {
             initUnitDatalist();
@@ -286,21 +289,39 @@
             catch (e) { return file; }
         }
 
+        // Fungsi Helper untuk mengubah file foto menjadi Base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Fungsi Upload Foto Baru (Dialihkan ke Google Drive via Apps Script)
         async function uploadPhoto(file) {
             const compressed = await compressImage(file);
-            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
+            const base64Data = await fileToBase64(compressed);
+            
+            const payload = {
+                fileData: base64Data,
+                mimeType: compressed.type || 'image/jpeg',
+                fileName: `${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`
+            };
 
-            const { data, error } = await supabaseClient.storage
-                .from('fuel-photos')
-                .upload(fileName, compressed, { contentType: 'image/jpeg' });
+            const response = await fetch(GOOGLE_DRIVE_WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
 
-            if (error) throw error;
-
-            const { data: publicUrlData } = supabaseClient.storage
-                .from('fuel-photos')
-                .getPublicUrl(fileName);
-
-            return publicUrlData.publicUrl;
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                return result.url; // Mengembalikan Link Foto dari Google Drive
+            } else {
+                throw new Error(result.message || 'Gagal mengupload foto ke Google Drive');
+            }
         }
 
         document.getElementById('fuelForm').addEventListener('submit', async (e) => {
