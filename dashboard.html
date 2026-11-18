@@ -342,8 +342,8 @@
 
     <!-- JavaScript Logic -->
     <script>
-        const SUPABASE_URL = "https://srygivwnsjyjmacwokix.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeWdpdnduc2p5am1hY3dva2l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5NjUyNTgsImV4cCI6MjEwNTU0MTI1OH0.GhsqIHUaww0af6P2USDyUpw2FuY_IzrihtFXGbSp2SY";
+        const SUPABASE_URL = "https://uaheptfofqbbgzsfyqc.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_Ibh4P-BuQxTtLLBIEtHwQg_8sJtDh5w";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let allLogs = [];
@@ -524,7 +524,7 @@
                 if (shiftVal.toLowerCase() === 'day') shiftStyle = "bg-amber-50 text-amber-700 border border-amber-200";
                 if (shiftVal.toLowerCase() === 'night') shiftStyle = "bg-indigo-50 text-indigo-700 border border-indigo-200";
 
-                const keteranganVal = log.keterangan_unit ? log.keterangan_unit : '-';
+                const keteranganVal = log.unit_remark ? log.unit_remark : '-';
 
                 return `
                     <tr class="hover:bg-slate-50/80 transition">
@@ -607,7 +607,7 @@
             document.getElementById('editFuelStorage').value = log.fuel_storage || '';
             document.getElementById('editReceiptIssued').value = log.receipt_issued || 'ISSUED';
             document.getElementById('editNoUnit').value = log.no_unit || '';
-            document.getElementById('editKeteranganUnit').value = log.keterangan_unit || '';
+            document.getElementById('editKeteranganUnit').value = log.unit_remark || '';
             document.getElementById('editMaterialType').value = log.material_type || '';
             document.getElementById('editFuelAmount').value = log.fuel_amount || 0;
             document.getElementById('editHmFuelTruck').value = log.hm_fuel_unit || '';
@@ -630,7 +630,7 @@
                 fuel_storage: document.getElementById('editFuelStorage').value,
                 receipt_issued: document.getElementById('editReceiptIssued').value,
                 no_unit: document.getElementById('editNoUnit').value,
-                keterangan_unit: document.getElementById('editKeteranganUnit').value,
+                unit_remark: document.getElementById('editKeteranganUnit').value,
                 material_type: document.getElementById('editMaterialType').value,
                 fuel_amount: parseFloat(document.getElementById('editFuelAmount').value) || 0,
                 hm_fuel_unit: document.getElementById('editHmFuelTruck').value,
@@ -670,8 +670,6 @@
                     const d = new Date(log.created_at);
                     let hour = d.getHours();
 
-                    // ATURAN SITE: 
-                    // Jika jam 00:00 s/d 06:59, tanggal ditarik mundur 1 hari (masuk shift malam sebelumnya)
                     if (hour < 7) {
                         d.setDate(d.getDate() - 1);
                         shiftStr = 'Night';
